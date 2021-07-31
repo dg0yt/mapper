@@ -43,6 +43,12 @@ private slots:
 	void mapCoordtoString_data();
 	
 	/**
+	 * Tests the MapCoord::fromString() implementation which is used for import.
+	 */
+	void mapCoordFromString();
+	void mapCoordFromString_data();
+	
+	/**
 	 * Tests filename extension fixup.
 	 */
 	void fixupExtensionTest();

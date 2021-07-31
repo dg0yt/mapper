@@ -565,6 +565,42 @@ void FileFormatTest::mapCoordtoString()
 
 
 
+void FileFormatTest::mapCoordFromString_data()
+{
+	using native_int = decltype(MapCoord().nativeX());
+	using flags_type = decltype(MapCoord().flags());
+	QTest::addColumn<QString>("input");
+	QTest::addColumn<native_int>("x");
+	QTest::addColumn<native_int>("y");
+	QTest::addColumn<flags_type>("flags");
+	
+	QTest::newRow("plain")     << QString::fromLatin1("-12 -23 255;")    << -12 << -23 << flags_type(255);
+	QTest::newRow("multi ' '")  << QString::fromLatin1("-12  23    255;") << -12 <<  23 << flags_type(255);
+	QTest::newRow("early \\n") << QString::fromLatin1("-12\n\n 23 255;") << -12 <<  23 << flags_type(255);
+	QTest::newRow("late \\r")  << QString::fromLatin1("12 -23 \r\r255;") <<  12 << -23 << flags_type(255);
+}
+
+void FileFormatTest::mapCoordFromString()
+{
+	using native_int = decltype(MapCoord().nativeX());
+	using flags_type = decltype(MapCoord().flags());
+	QFETCH(QString, input);
+	QFETCH(native_int, x);
+	QFETCH(native_int, y);
+	QFETCH(flags_type, flags);
+	
+	auto ref = QStringRef{&input};
+	auto const coord = MapCoord(ref);
+	QEXPECT_FAIL("multu ' '", "Multiple space is unsupported", Continue); // GH-1982
+	QEXPECT_FAIL("early \\n", "Newline is unsupported", Continue); // GH-1982
+	QEXPECT_FAIL("late \\n", "Newline is unsupported", Continue);  // GH-1982
+	QCOMPARE(coord.nativeX(), x);
+	QCOMPARE(coord.nativeY(), y);
+	QCOMPARE(coord.flags(), flags);
+}
+
+
+
 void FileFormatTest::fixupExtensionTest_data()
 {
 	QTest::addColumn<QByteArray>("format_id");
