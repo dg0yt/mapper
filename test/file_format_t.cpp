@@ -21,6 +21,7 @@
 #include "file_format_t.h"
 
 #include <array>
+#include <exception>
 #include <initializer_list>
 #include <limits>
 #include <memory>
@@ -48,6 +49,7 @@
 #include <QSize>
 #include <QSizeF>
 #include <QString>
+#include <QStringRef>
 #include <QTemporaryDir>
 #include <QVariant>
 
@@ -590,13 +592,19 @@ void FileFormatTest::mapCoordFromString()
 	QFETCH(flags_type, flags);
 	
 	auto ref = QStringRef{&input};
-	auto const coord = MapCoord(ref);
-	QEXPECT_FAIL("multu ' '", "Multiple space is unsupported", Continue); // GH-1982
+	QEXPECT_FAIL("multi ' '", "Multiple space is unsupported", Continue); // GH-1982
 	QEXPECT_FAIL("early \\n", "Newline is unsupported", Continue); // GH-1982
 	QEXPECT_FAIL("late \\n", "Newline is unsupported", Continue);  // GH-1982
-	QCOMPARE(coord.nativeX(), x);
-	QCOMPARE(coord.nativeY(), y);
-	QCOMPARE(coord.flags(), flags);
+	QFAIL("Foo");
+	try {
+		auto const coord = MapCoord(ref);
+		QVERIFY(true);
+		QCOMPARE(coord.nativeX(), x);
+		QCOMPARE(coord.nativeY(), y);
+		QCOMPARE(coord.flags(), flags);
+	}  catch (std::invalid_argument const& e) {
+		QFAIL(e.what());
+	}
 }
 
 
