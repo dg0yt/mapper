@@ -178,6 +178,11 @@ void XmlElementWriter::write(const MapCoordVector& coords)
 	
 	writeAttribute(literal::count, coords.size());
 	
+	// For sending maps as e-mail attachment, 
+	// avoid SMTP server line length limits near 998.
+	constexpr auto max_line_length = 300;
+	auto countdown_to_break = max_line_length;
+	
 	if (XMLFileFormat::active_version < 6 || xml.autoFormatting())
 	{
 		// XMAP files and old format: syntactically rich output
@@ -192,14 +197,30 @@ void XmlElementWriter::write(const MapCoordVector& coords)
 		xml.writeCharacters({});  // Finish the start element
 		MapCoord::StringBuffer<char> buffer;
 		for (auto& coord : coords)
-			device->write(coord.toUtf8(buffer));
+		{
+			auto bytes = coord.toUtf8(buffer);
+			countdown_to_break -= bytes.length();
+			if (countdown_to_break < 0) {
+				bytes.append('\n');
+				countdown_to_break = max_line_length;
+			}
+			device->write(bytes);
+		}
 	}
 	else
 	{
 		// Default: efficient plain text format
 		MapCoord::StringBuffer<QChar> buffer;
 		for (auto& coord : coords)
+		{
+			auto string = coord.toString(buffer);
+			countdown_to_break -= string.length();
+			if (countdown_to_break < 0) {
+				string.append(QChar::LineFeed);
+				countdown_to_break = max_line_length;
+			}
 			xml.writeCharacters(coord.toString(buffer));
+		}
 	}
 }
 
