@@ -123,12 +123,6 @@ QVariant makeCheckBoxDecorator(QStyle* style, const QSize& size)
 	return pixmap;
 }
 
-/// Local wrapper for Util::ToolButton::create() adding the What's This bit.
-QToolButton* createToolButton(const QIcon& icon, const QString& text)
-{
-	return Util::ToolButton::create(icon, text, "templates.html#setup");
-}
-
 }  // anonymous namespace
 
 
@@ -233,6 +227,11 @@ TemplateListWidget::TemplateListWidget(Map& map, MapView& main_view, MapEditorCo
 	all_templates_layout->setMargin(0);
 	all_templates_layout->addWidget(top_bar_widget);
 	all_templates_layout->addWidget(template_table, 1);
+	
+	static auto const createToolButton = [](const QIcon& icon, const QString& text)
+	{
+		return Util::ToolButton::create(icon, text, "templates.html#setup");
+	};
 	
 	auto* new_button_menu = new QMenu(this);
 	if (!mobile_mode)

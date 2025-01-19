@@ -68,11 +68,9 @@
 
 namespace OpenOrienteering {
 
-namespace {
-
 namespace literal {
 
-	static const QLatin1String scale("scale");
+	extern const QLatin1String scale;
 	static const QLatin1String resolution("resolution");
 	static const QLatin1String templates_visible("templates_visible");
 	static const QLatin1String grid_visible("grid_visible");
@@ -98,9 +96,6 @@ namespace literal {
 	static const QLatin1String single_page("single_page");
 	
 }  // namespace literal
-
-
-}  // namespace
 
 
 // #### MapPrinterPageFormat ###

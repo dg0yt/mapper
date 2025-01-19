@@ -78,7 +78,8 @@ qt5_add_resources(Mapper_RESOURCES_RCC ${Mapper_RESOURCES} OPTIONS -no-compress)
 # Mapper common: static library of full runtime 
 # (To be used by Mapper executable and by system tests.)
 
-set(Mapper_Common_SRCS
+# Mapper core: subset of common sources
+set(Mapper_Core_SRCS
   global.cpp
   mapper_resource.cpp
   settings.cpp
@@ -89,6 +90,7 @@ set(Mapper_Common_SRCS
   core/crs_template_implementation.cpp
   core/georeferencing.cpp
   core/latlon.cpp
+  core/literal.cpp
   core/map.cpp
   core/map_color.cpp
   core/map_coord.cpp
@@ -137,6 +139,27 @@ set(Mapper_Common_SRCS
   fileformats/ocd_types.cpp
   fileformats/simple_course_export.cpp
   fileformats/xml_file_format.cpp
+  
+  undo/map_part_undo.cpp
+  undo/object_undo.cpp
+  undo/undo.cpp
+  undo/undo_manager.cpp
+  
+  util/encoding.cpp
+  util/key_value_container.cpp
+  util/mapper_service_proxy.cpp
+  util/matrix.cpp
+  util/overriding_shortcut.cpp
+  util/recording_translator.cpp
+  util/scoped_signals_blocker.cpp
+  util/transformation.cpp
+  util/translation_util.cpp
+  util/util.cpp
+  util/xml_stream_util.cpp
+)
+
+set(Mapper_Common_SRCS
+  ${Mapper_Core_SRCS}
   
   gui/about_dialog.cpp
   gui/autosave_dialog.cpp
@@ -254,23 +277,7 @@ set(Mapper_Common_SRCS
   tools/tool_base.cpp
   tools/tool_helpers.cpp
   
-  undo/map_part_undo.cpp
-  undo/object_undo.cpp
-  undo/undo.cpp
-  undo/undo_manager.cpp
-  
-  util/encoding.cpp
   util/item_delegates.cpp
-  util/key_value_container.cpp
-  util/mapper_service_proxy.cpp
-  util/matrix.cpp
-  util/overriding_shortcut.cpp
-  util/recording_translator.cpp
-  util/scoped_signals_blocker.cpp
-  util/transformation.cpp
-  util/translation_util.cpp
-  util/util.cpp
-  util/xml_stream_util.cpp
 )
 
 # Extra header to be shown in the IDE or to be translated
@@ -334,6 +341,23 @@ target_compile_definitions(Mapper_Common INTERFACE
   MAPPER_COMMON_LIB
 )
 
+mapper_translations_sources(${Mapper_Common_SRCS} ${Mapper_Common_HEADERS})
+
+
+# Unity build support
+
+target_compile_definitions(Mapper_Common PRIVATE
+  $<$<BOOL:${CMAKE_UNITY_BUILD}>:Mapper_UNITY_BUILD>
+)
+set_target_properties(Mapper_Common PROPERTIES
+  xUNITY_BUILD_MODE GROUP
+)
+set_source_files_properties(${Mapper_Common_SRCS} PROPERTIES
+  UNITY_GROUP Mapper_Common
+)
+set_source_files_properties(${Mapper_Core_SRCS} PROPERTIES
+  UNITY_GROUP Mapper_Core # overrides Mapper_Common
+)
 
 mapper_translations_sources(${Mapper_Common_SRCS} ${Mapper_Common_HEADERS})
 

@@ -136,6 +136,13 @@ private:
 	
 	QScopedPointer<ObjectMover> object_mover;
 	QScopedPointer<MapRenderables> highlight_renderables;
+	
+protected:
+	/**
+	 * Maximum number of objects in the selection for which point handles
+	 * will still be displayed (and can be edited).
+	 */
+	static const unsigned int max_objects_for_handle_display;
 };
 
 

@@ -42,26 +42,25 @@
 #include "util/xml_stream_util.h"
 
 
+namespace OpenOrienteering {
+
 namespace literal
 {
-	static const QLatin1String zoom("zoom");
-	static const QLatin1String rotation("rotation");
-	static const QLatin1String position_x("position_x");
-	static const QLatin1String position_y("position_y");
-	static const QLatin1String grid("grid");
-	static const QLatin1String overprinting_simulation_enabled("overprinting_simulation_enabled");
-	static const QLatin1String map("map");
-	static const QLatin1String opacity("opacity");
-	static const QLatin1String visible("visible");
-	static const QLatin1String templates("templates");
-	static const QLatin1String hidden("hidden");
-	static const QLatin1String ref("ref");
-	static const QLatin1String template_string("template");
+static const QLatin1String zoom("zoom");
+static const QLatin1String position_x("position_x");
+static const QLatin1String position_y("position_y");
+extern const QLatin1String grid;
+static const QLatin1String overprinting_simulation_enabled("overprinting_simulation_enabled");
+extern const QLatin1String map;
+extern const QLatin1String opacity;
+static const QLatin1String visible("visible");
+extern const QLatin1String templates;
+static const QLatin1String hidden("hidden");
+static const QLatin1String ref("ref");
+extern const QLatin1String template_string;
 }
 
 
-
-namespace OpenOrienteering {
 
 // ### TemplateVisibility ###
 

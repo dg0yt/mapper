@@ -65,23 +65,10 @@
 
 namespace OpenOrienteering {
 
-namespace {
-	
-	/**
-	 * Maximum number of objects in the selection for which point handles
-	 * will still be displayed (and can be edited).
-	 */
-	unsigned int max_objects_for_handle_display = 10;
-	
-	/**
-	 * The value which indicates that no point of the current object is hovered.
-	 */
-	auto no_point = std::numeric_limits<MapCoordVector::size_type>::max();
-	
-	
-}
+const unsigned int EditPointTool::max_objects_for_handle_display = 10;
 
-
+const MapCoordVector::size_type EditPointTool::no_point = std::numeric_limits<MapCoordVector::size_type>::max();
+    
 
 EditPointTool::EditPointTool(MapEditorController* editor, QAction* tool_action)
  : EditTool { editor, EditPoint, tool_action }

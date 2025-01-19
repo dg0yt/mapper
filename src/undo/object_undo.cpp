@@ -31,15 +31,15 @@
 #include "util/xml_stream_util.h"
 
 
+namespace OpenOrienteering {
+
 namespace literal
 {
-	const QLatin1String source("source");
-	const QLatin1String part("part");
-	const QLatin1String reverse("reverse");
+const QLatin1String source("source");
+extern const QLatin1String part;
+const QLatin1String reverse("reverse");
 }
 
-
-namespace OpenOrienteering {
 
 // ### ObjectModifyingUndoStep ###
 

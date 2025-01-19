@@ -40,18 +40,17 @@
 #include "util/xml_stream_util.h"
 
 
+namespace OpenOrienteering {
+
 namespace literal
 {
-	const QLatin1String part("part");
-	const QLatin1String name("name");
-	const QLatin1String objects("objects");
-	const QLatin1String object("object");
-	const QLatin1String count("count");
+extern const QLatin1String count;
+extern const QLatin1String name;
+extern const QLatin1String part;
+extern const QLatin1String objects;
+extern const QLatin1String object;
 }
 
-
-
-namespace OpenOrienteering {
 
 MapPart::MapPart(const QString& name, Map* map)
 : name(name)

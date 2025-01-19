@@ -30,15 +30,15 @@
 #include "util/xml_stream_util.h"
 
 
+namespace OpenOrienteering {
+
 namespace literal
 {
-	const QLatin1String step("step");
-	const QLatin1String steps("steps");
+const QLatin1String step("step");
+const QLatin1String steps("steps");
 }
 
 
-
-namespace OpenOrienteering {
 
 // ### UndoStep ###
 

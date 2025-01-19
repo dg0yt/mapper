@@ -32,6 +32,8 @@
 #include "fileformats/file_import_export.h"
 #include "fileformats/ocd_file_export.h"
 #include "fileformats/ocd_file_import.h"
+#include "settings.h"
+#include "util/encoding.h"
 
 
 namespace OpenOrienteering {
@@ -143,6 +145,15 @@ std::unique_ptr<Importer> OcdFileFormat::makeImporter(const QString& path, Map *
 std::unique_ptr<Exporter> OcdFileFormat::makeExporter(const QString& path, const Map* map, const MapView* view) const
 {
 	return std::make_unique<OcdFileExport>(path, map, view, version);
+}
+
+
+// static
+QTextCodec* OcdFileFormat::codecFromSettings()
+{
+	const auto& settings = Settings::getInstance();
+	const auto name = settings.getSetting(Settings::General_Local8BitEncoding).toByteArray();
+	return Util::codecForName(name);
 }
 
 

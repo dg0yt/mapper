@@ -126,9 +126,9 @@ static_assert(QLineF(QPointF(0,0), MapCoordF(1,0).normalVector()) == QLineF(QPoi
 
 namespace literal
 {
-	static const QLatin1String x("x");
-	static const QLatin1String y("y");
-	static const QLatin1String flags("flags");
+	extern const QLatin1String x;
+	extern const QLatin1String y;
+	extern const QLatin1String flags;
 }
 
 

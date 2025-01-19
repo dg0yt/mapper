@@ -79,26 +79,10 @@
 #include "templates/template.h"
 #include "templates/template_map.h"
 #include "templates/template_placeholder.h"
-#include "util/encoding.h"
 #include "util/util.h"
 
 
 namespace OpenOrienteering {
-
-namespace {
-
-static QTextCodec* codecFromSettings()
-{
-	const auto& settings = Settings::getInstance();
-	const auto name = settings.getSetting(Settings::General_Local8BitEncoding).toByteArray();
-	return Util::codecForName(name);
-}	
-
-
-}  // namespace
-
-
-
 
 OcdFileImport::OcdImportedPathObject::~OcdImportedPathObject() = default;
 
@@ -106,7 +90,7 @@ OcdFileImport::OcdImportedPathObject::~OcdImportedPathObject() = default;
 
 OcdFileImport::OcdFileImport(const QString& path, Map* map, MapView* view)
  : Importer { path, map, view }
- , custom_8bit_encoding { codecFromSettings() }
+ , custom_8bit_encoding { OcdFileFormat::codecFromSettings() }
 {
 	if (!custom_8bit_encoding)
 	{

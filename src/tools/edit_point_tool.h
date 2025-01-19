@@ -203,6 +203,17 @@ protected:
 	int old_horz_alignment;
 	/** See old_text */
 	int old_vert_alignment;
+	
+	/**
+	 * The value which indicates that no point of the current object is hovered.
+	 */
+	static const MapCoordVector::size_type no_point;
+	
+	/**
+	 * Maximum number of objects in the selection for which point handles
+	 * will still be displayed (and can be edited).
+	 */
+	static const unsigned int max_objects_for_handle_display;
 };
 
 

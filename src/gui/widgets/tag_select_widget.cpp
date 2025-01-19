@@ -50,17 +50,6 @@
 
 namespace OpenOrienteering {
 
-namespace {
-
-/// Local wrapper for Util::ToolButton::create() adding the What's This bit.
-QToolButton* createToolButton(const QIcon& icon, const QString& text)
-{
-	return Util::ToolButton::create(icon, text, "find_objects.html#query-editor");
-}
-
-}  // anonymous namespace
-
-
 // ### TagSelectWidget ###
 
 TagSelectWidget::TagSelectWidget(QWidget* parent)
@@ -100,6 +89,11 @@ TagSelectWidget::~TagSelectWidget() = default;
 
 QWidget* TagSelectWidget::makeButtons(QWidget* parent)
 {
+	static auto const createToolButton = [](const QIcon& icon, const QString& text)
+	{
+		return Util::ToolButton::create(icon, text, "find_objects.html#query-editor");
+	};
+	
 	auto* add_button = createToolButton(QIcon(QString::fromLatin1(":/images/plus.png")), tr("Add Row"));
 	delete_button = createToolButton(QIcon(QString::fromLatin1(":/images/minus.png")), tr("Remove Row"));
 	delete_button->setEnabled(false);

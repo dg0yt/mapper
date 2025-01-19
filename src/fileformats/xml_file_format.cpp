@@ -144,7 +144,7 @@ std::unique_ptr<Exporter> XMLFileFormat::makeExporter(const QString& path, const
 
 namespace literal
 {
-	static const QLatin1String map("map");
+	extern const QLatin1String map;
 	static const QLatin1String version("version");
 	static const QLatin1String notes("notes");
 	
@@ -153,7 +153,7 @@ namespace literal
 	static const QLatin1String action("action");
 	static const QLatin1String skip("skip");
 	
-	static const QLatin1String count("count");
+	extern const QLatin1String count;
 	static const QLatin1String current("current");
 	
 	static const QLatin1String georeferencing("georeferencing");
@@ -161,7 +161,7 @@ namespace literal
 	static const QLatin1String colors("colors");
 	static const QLatin1String color("color");
 	static const QLatin1String priority("priority");
-	static const QLatin1String name("name");
+	extern const QLatin1String name;
 	static const QLatin1String method("method");
 	static const QLatin1String spotcolor("spotcolor");
 	static const QLatin1String cmyk("cmyk");
@@ -176,34 +176,34 @@ namespace literal
 	static const QLatin1String factor("factor");
 	static const QLatin1String c("c");
 	static const QLatin1String m("m");
-	static const QLatin1String y("y");
+	extern const QLatin1String y;
 	static const QLatin1String k("k");
 	static const QLatin1String r("r");
 	static const QLatin1String g("g");
 	static const QLatin1String b("b");
-	static const QLatin1String opacity("opacity");
+	extern const QLatin1String opacity;
 	
 	static const QLatin1String symbols("symbols");
 	static const QLatin1String id("id");
-	static const QLatin1String symbol("symbol");
+	extern const QLatin1String symbol;
 	
-	static const QLatin1String parts("parts");
-	static const QLatin1String part("part");
+	extern const QLatin1String parts;
+	extern const QLatin1String part;
 	
-	static const QLatin1String templates("templates");
-	static const QLatin1String template_string("template");
+	extern const QLatin1String templates;
+	extern const QLatin1String template_string;
 	static const QLatin1String first_front_template("first_front_template");
 	
 	static const QLatin1String defaults("defaults");
 	static const QLatin1String use_meters_per_pixel("use_meters_per_pixel");
 	static const QLatin1String meters_per_pixel("meters_per_pixel");
 	static const QLatin1String dpi("dpi");
-	static const QLatin1String scale("scale");
+	extern const QLatin1String scale;
 	
 	static const QLatin1String view("view");
 	static const QLatin1String area_hatching_enabled("area_hatching_enabled");
 	static const QLatin1String baseline_view_enabled("baseline_view_enabled");
-	static const QLatin1String grid("grid");
+	extern const QLatin1String grid;
 	static const QLatin1String map_view("map_view");
 	
 	static const QLatin1String print("print");

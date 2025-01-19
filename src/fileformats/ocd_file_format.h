@@ -87,6 +87,9 @@ public:
 	/// A special value which indicates the usage of an auto-detected (or default) version.
 	static constexpr quint16 autoDeterminedVersion() { return 0; }
 	
+	/// A special value which indicates the usage of an auto-detected (or default) version.
+	static QTextCodec* codecFromSettings();
+	
 private:
 	quint16 version = 0;
 	

@@ -29,20 +29,17 @@
 #include "util/xml_stream_util.h"
 
 
+namespace OpenOrienteering {
+
 namespace literal
 {
-	const QLatin1String change("change");
-	const QLatin1String type("type");
-	const QLatin1String part("part");
-	const QLatin1String add("add");
-	const QLatin1String remove("remove");
-	const QLatin1String modify("modify");
-	const QLatin1String name("name");
+const QLatin1String change("change");
+extern const QLatin1String type;
+extern const QLatin1String part;
+extern const QLatin1String name;
 }
 
 
-
-namespace OpenOrienteering {
 
 MapPartUndoStep::MapPartUndoStep(Map* map, MapPartChange change, const MapPart* part)
 : UndoStep(UndoStep::MapPartUndoStepType, map)

@@ -21,7 +21,6 @@
 
 #include "edit_line_tool.h"
 
-#include <map>
 #include <memory>
 #include <limits>
 #include <vector>
@@ -60,17 +59,10 @@
 #include "util/util.h"
 
 
-namespace
-{
-	/**
-	 * Maximum number of objects in the selection for which point handles
-	 * will still be displayed (and can be edited).
-	 */
-	unsigned int max_objects_for_handle_display = 10;
-}
-
-
 namespace OpenOrienteering {
+
+const unsigned int EditLineTool::max_objects_for_handle_display = 10;
+
 
 EditLineTool::EditLineTool(MapEditorController* editor, QAction* tool_action)
  : EditTool(editor, EditLine, tool_action)

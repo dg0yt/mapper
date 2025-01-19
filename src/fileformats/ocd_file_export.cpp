@@ -86,23 +86,12 @@
 #include "fileformats/ocd_types_v12.h"  // IWYU pragma: keep
 #include "templates/template.h"
 #include "templates/template_map.h"
-#include "util/encoding.h"
 #include "util/util.h"
 
 
 namespace OpenOrienteering {
 
 namespace {
-
-/// \todo De-duplicate (ocd_file_import.cpp)
-static QTextCodec* codecFromSettings()
-{
-	const auto& settings = Settings::getInstance();
-	const auto name = settings.getSetting(Settings::General_Local8BitEncoding).toByteArray();
-	return Util::codecForName(name);
-}
-
-
 
 /**
  * Returns the index of the first color which can be assumed to be a pure spot color.
@@ -621,7 +610,7 @@ QTextCodec* OcdFileExport::determineEncoding()
 template<>
 QTextCodec* OcdFileExport::determineEncoding<Ocd::Custom8BitEncoding>()
 {
-	auto encoding = codecFromSettings();
+	auto encoding = OcdFileFormat::codecFromSettings();
 	if (!encoding)
 	{
 		addWarning(::OpenOrienteering::OcdFileExport::tr("Encoding '%1' is not available. Check the settings.")
