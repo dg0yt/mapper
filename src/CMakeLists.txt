@@ -346,6 +346,7 @@ mapper_translations_sources(${Mapper_Common_SRCS} ${Mapper_Common_HEADERS})
 
 # Unity build support
 
+option(CMAKE_UNITY_BUILD "Enable unity build" $ENV{CMAKE_UNITY_BUILD})
 target_compile_definitions(Mapper_Common PRIVATE
   $<$<BOOL:${CMAKE_UNITY_BUILD}>:Mapper_UNITY_BUILD>
 )

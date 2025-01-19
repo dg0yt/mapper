@@ -29,6 +29,7 @@
 
 variables:
   ENABLE_PDF_MANUAL: 0
+  CMAKE_UNITY_BUILD: 1
 
 jobs:
 - job: Codespell
