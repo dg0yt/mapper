@@ -17,6 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef COVE_POLYGON_TEST_H
+#define COVE_POLYGON_TEST_H
+
 #include <QObject>
 #include <QString>
 
@@ -37,3 +40,5 @@ private:
 	void compareResults(const cove::PolygonList& polys,
 	                    const QString& filename) const;
 };
+
+#endif  // COVE_POLYGON_TEST_H
