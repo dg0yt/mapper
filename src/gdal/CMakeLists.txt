@@ -41,6 +41,10 @@ set(MAPPER_GDAL_SOURCES
 	
 mapper_translations_sources(${MAPPER_GDAL_HEADERS} ${MAPPER_GDAL_SOURCES})
 
+set_source_files_properties(${MAPPER_GDAL_SOURCES} PROPERTIES
+  UNITY_GROUP Mapper_GDAL
+)
+
 add_library(mapper-gdal STATIC ${MAPPER_GDAL_HEADERS} ${MAPPER_GDAL_SOURCES} "${PROJECT_BINARY_DIR}/gdal/mapper-osmconf.ini")
 
 target_compile_definitions(mapper-gdal PRIVATE
