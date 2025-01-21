@@ -281,6 +281,12 @@ if(NOT CMAKE_CXX_INCLUDE_WHAT_YOU_USE AND Mapper_DEVELOPMENT_BUILD AND SH_EXECUT
 endif()
 
 
+# Unity build support
+
+option(CMAKE_UNITY_BUILD "Enable unity build" $ENV{CMAKE_UNITY_BUILD})
+set(CMAKE_UNITY_BUILD_BATCH_SIZE 16 CACHE STRING "Maximum number of source files that can be combined into unit")
+
+
 # Subdirectories
 
 add_subdirectory("doc/manual")
