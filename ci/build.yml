@@ -124,6 +124,9 @@ steps:
   condition: always()
   displayName: 'Process output and test results'
 
+- task: BuildQualityChecks@9
+  displayName: 'Check build quality'
+
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: cTest
