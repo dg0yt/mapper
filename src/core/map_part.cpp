@@ -44,11 +44,11 @@ namespace OpenOrienteering {
 
 namespace literal
 {
-extern const QLatin1String count;
-extern const QLatin1String name;
-extern const QLatin1String part;
-extern const QLatin1String objects;
-extern const QLatin1String object;
+	extern const QLatin1String count;
+	extern const QLatin1String name;
+	extern const QLatin1String part;
+	extern const QLatin1String objects;
+	extern const QLatin1String object;
 }
 
 

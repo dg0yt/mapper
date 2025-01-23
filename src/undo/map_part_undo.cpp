@@ -33,10 +33,10 @@ namespace OpenOrienteering {
 
 namespace literal
 {
-const QLatin1String change("change");
-extern const QLatin1String type;
-extern const QLatin1String part;
-extern const QLatin1String name;
+	const QLatin1String change("change");
+	extern const QLatin1String type;
+	extern const QLatin1String part;
+	extern const QLatin1String name;
 }
 
 

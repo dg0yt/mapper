@@ -35,9 +35,9 @@ namespace OpenOrienteering {
 
 namespace literal
 {
-const QLatin1String source("source");
-extern const QLatin1String part;
-const QLatin1String reverse("reverse");
+	const QLatin1String source("source");
+	extern const QLatin1String part;
+	const QLatin1String reverse("reverse");
 }
 
 

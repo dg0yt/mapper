@@ -67,17 +67,17 @@ namespace OpenOrienteering {
 
 namespace literal
 {
-extern const QLatin1String object;
-extern const QLatin1String symbol;
-extern const QLatin1String type;
-static const QLatin1String text("text");
-static const QLatin1String coords("coords");
-static const QLatin1String h_align("h_align");
-static const QLatin1String v_align("v_align");
-static const QLatin1String pattern("pattern");
-extern const QLatin1String rotation;
-static const QLatin1String size("size");
-static const QLatin1String tags("tags");
+	extern const QLatin1String object;
+	extern const QLatin1String symbol;
+	extern const QLatin1String type;
+	static const QLatin1String text("text");
+	static const QLatin1String coords("coords");
+	static const QLatin1String h_align("h_align");
+	static const QLatin1String v_align("v_align");
+	static const QLatin1String pattern("pattern");
+	extern const QLatin1String rotation;
+	static const QLatin1String size("size");
+	static const QLatin1String tags("tags");
 }
 
 

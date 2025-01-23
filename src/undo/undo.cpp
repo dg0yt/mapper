@@ -34,8 +34,8 @@ namespace OpenOrienteering {
 
 namespace literal
 {
-const QLatin1String step("step");
-const QLatin1String steps("steps");
+	const QLatin1String step("step");
+	const QLatin1String steps("steps");
 }
 
 
