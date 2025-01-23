@@ -35,7 +35,8 @@ steps:
     SUPERBUILD_INSTALL_DIR_NATIVE=${SUPERBUILD_INSTALL_DIR_NATIVE//\//\\}
     echo "##vso[task.setVariable variable=SOURCE_DIR]${SOURCE_DIR}"
     echo "##vso[task.setVariable variable=TEST_RESULTS]${BUILD_SOURCESDIRECTORY}\\build\\default\\openorienteering-mapper-ci\\Testing"
-    echo "##vso[task.setVariable variable=CMAKE_WRAPPING]-E env ${SUPERBUILD_INSTALL_DIR_NATIVE}\usr\bin\bash.exe ${SOURCE_DIR}/ci/shell.sh cmake"
+    #echo "##vso[task.setVariable variable=CMAKE_WRAPPING]-E env ${SUPERBUILD_INSTALL_DIR_NATIVE}\usr\bin\bash.exe ${SOURCE_DIR}/ci/shell.sh cmake"
+    echo "##vso[task.setVariable variable=CMAKE_WRAPPING]-E env CC= PKG_CONFIG_PATH= cmake"
     echo "##vso[task.setVariable variable=CHERE_INVOKING]enabled_from_arguments"
     echo "##vso[task.setVariable variable=MSYSCON]defterm"
     case "$(MINGW)" in
