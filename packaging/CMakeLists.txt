@@ -53,7 +53,7 @@ function(deploy_qt_translations basename)
 	endif()
 	
 	install(CODE 
-	  "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_CURRENT_BINARY_DIR}\" --target \"${basename}-translations\")"
+	  "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${PROJECT_BINARY_DIR}\" --target \"${basename}-translations\")"
 	)
 	
 	set(generated_translations )
@@ -119,8 +119,9 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 else()
 	set(_system_name "${CMAKE_SYSTEM_NAME}-unknown")
 endif()
-set(CPACK_PACKAGE_FILE_NAME 
-    "OpenOrienteering-Mapper-${Mapper_VERSION_FILESYSTEM}-${_system_name}")
+set(Mapper_SYSTEM_NAME "${_system_name}" CACHE STRING "System name for package name generation")
+set(CPACK_PACKAGE_FILE_NAME
+    "OpenOrienteering-Mapper-${Mapper_VERSION_FILESYSTEM}-${Mapper_SYSTEM_NAME}")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING")
 set(CPACK_STRIP_FILES "TRUE")
 

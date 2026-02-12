@@ -335,6 +335,10 @@ set(ci
   ci/setup-ubuntu.yml
   ci/shell.sh
   ci/openorienteering-mapper-ci.cmake
+  .github/zizmor.yml
+  .github/workflows/zizmor.yml
+  .github/workflows/ci.yml
+  .github/workflows/vcpkg.yml
 )
 
 add_custom_target(CI SOURCES ${ci})
