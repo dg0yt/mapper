@@ -1,0 +1,13 @@
+{
+  "name": "qt5-declarative",
+  "version-string": "empty",
+  "description": "empty",
+  "features": {
+    "d3d12": {
+      "description": "empty"
+    },
+    "platform-default-features": {
+      "description": "empty"
+    }
+  }
+}

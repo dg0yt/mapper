@@ -1,0 +1,292 @@
+name: CI with vcpkg
+
+on:
+  push:
+    branches: [ "master", "vcpkg" ]
+  pull_request:
+    branches: [ "master", "vcpkg" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      restore_export:
+        description: 'Restore vcpkg export from cache'
+        type: boolean
+        default: true
+
+  # Keep cache alive
+  schedule:
+    - cron: '10 21 * * 2,5'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPORT_EPOCH: 0
+  UPLOAD_ARTIFACTS: ${{ case(secrets.ARTIFACTS_KEY == '', 0, 1) }}
+  VERBOSE: 1
+
+jobs:
+  ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        label: [arm64-macos, x64-linux, x64-linux-debug, x64-macos, x64-windows]
+        include:
+          - label: arm64-macos
+            target-triplet: arm64-osx-dynamic-release
+            host-triplet: arm64-osx-dynamic-release
+            runner: macos-15
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake"
+          - label: x64-linux
+            target-triplet: x64-linux-dynamic-release
+            host-triplet: x64-linux-dynamic-release
+            runner: ubuntu-24.04
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake"
+          - label: x64-linux-debug
+            target-triplet: x64-linux-dynamic-release
+            host-triplet: x64-linux-dynamic-release
+            runner: ubuntu-24.04
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake -DCMAKE_BUILD_TYPE=Debug"
+          - label: x64-macos
+            target-triplet: x64-osx-dynamic-release
+            host-triplet: x64-osx-dynamic-release
+            runner: macos-15-intel
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake"
+          - label: x64-windows
+            target-triplet: x64-windows-dynamic-release
+            host-triplet: x64-windows-dynamic-release
+            runner: windows-2025
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=%GITHUB_WORKSPACE%/vcpkg-export/scripts/toolchains/windows.cmake -DVCPKG_CRT_LINKAGE=dynamic -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
+            vcvars-options: x64
+
+    runs-on: "${{ matrix.runner }}"
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v4
+
+      - name: Install direct system dependencies
+        run: |
+          case "${{ matrix.runner }}" in
+          macos*)
+            brew install doxygen
+            brew --prefix
+            # https://github.com/microsoft/vcpkg/issues/48417 ?
+            if test -d /usr/local/include ; then sudo mv /usr/local/include /usr/local/include-no-default ; fi
+            ;;
+          ubuntu*)
+            sudo apt-get update
+            sudo apt-get install doxygen
+            ;;
+          windows*)
+            choco install --no-progress nsis
+            echo 'C:\Program Files (x86)\NSIS' >> "$GITHUB_PATH"
+            ;;
+          esac
+
+      - name: Determine vcpkg configuration
+        id: vcpkg-configuration
+        env: &vcpkg_env
+          VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/cache/artifacts"
+          VCPKG_DOWNLOADS: "${{ github.workspace }}/cache/downloads"
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          mkdir -p "$VCPKG_DOWNLOADS"
+          cd ci/vcpkg
+          CONFIGURATION=$( \
+            find vcpkg.json vcpkg-configuration.json overlay-ports overlay-triplets -type f -exec sha1sum '{}' ';' | \
+            sed -e '/overlay-triplets[/]/ {' -e '/[/]${{ matrix.host-triplet }}[.]cmake/ p' -e '/[/]${{ matrix.target-triplet }}[.]cmake/ p' -e 'd' -e '}' |
+            sort -u)
+          echo "$CONFIGURATION"
+          echo "$CONFIGURATION" |
+            sha1sum | \
+            (read HASH FILE; echo hash=$HASH) | \
+            tee -a "$GITHUB_OUTPUT"
+          echo 'CALL_VCVARSALL=call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvars-options }}' >> "$GITHUB_ENV"
+
+      - name: Restore vcpkg export
+        id: restore-export
+        if: github.event_name == 'pull_request' || github.event_name == 'push' || inputs.restore_export
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ github.workspace }}/vcpkg-export
+          key: vcpkg-export-${{ env.EXPORT_EPOCH }}-${{ matrix.host-triplet }}_${{ matrix.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}
+
+      - name: Restore vcpkg artifacts and tools
+        if: steps.restore-export.outputs.cache-hit == ''
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ${{ github.workspace }}/cache
+            !${{ github.workspace }}/cache/downloads/tools
+          key: vcpkg-artifacts-${{ matrix.host-triplet }}_${{ matrix.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}-${{ github.run_id }}
+          restore-keys: |
+            vcpkg-artifacts-${{ matrix.host-triplet }}_${{ matrix.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}-
+            vcpkg-artifacts-${{ matrix.host-triplet }}_${{ matrix.target-triplet }}_
+            vcpkg-artifacts-${{ matrix.host-triplet }}_
+
+      - name: Install transitive system dependencies
+        if: steps.restore-export.outputs.cache-hit == ''
+        run: |
+          case "${{ matrix.runner }},$RUNNER_ARCH" in
+          macos*,X64)
+            brew install \
+              autoconf-archive automake
+            echo "#include <jconfig.h>"  | cc -E - || echo GOTCHA
+            ;;
+          macos*)
+            brew install \
+              autoconf autoconf-archive automake libtool
+            ;;
+          ubuntu*)
+            sudo apt-get install \
+              autoconf-archive \
+              libltdl-dev \
+              mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev libgles2-mesa-dev \
+              libx11-dev \
+              libxaw7-dev \
+              libxcursor-dev \
+              libxi-dev \
+              libxinerama-dev \
+              libxkbcommon-x11-dev \
+              libxrandr-dev \
+              libxt-dev \
+              libxxf86vm-dev \
+              xutils-dev \
+              libxext-dev libxfixes-dev libxrender-dev \
+              libxcb1-dev libx11-xcb-dev libxcb-glx0-dev libxcb-util0-dev \
+              libxkbcommon-dev libxcb-keysyms1-dev \
+              libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev \
+              libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev \
+              libxcb-render-util0-dev libxcb-xinerama0-dev libxcb-xkb-dev libxcb-xinput-dev \
+              libxcb-cursor-dev \
+              libxtst-dev
+            ;;
+          esac
+
+      - name: vcpkg install --triplet=${{ matrix.target-triplet }}
+        if: steps.restore-export.outputs.cache-hit == ''
+        env: *vcpkg_env
+        run: |
+          cd ci/vcpkg
+          vcpkg install --host-triplet=${{ matrix.host-triplet }} --triplet=${{ matrix.target-triplet }} --x-install-root='${{ github.workspace }}/vcpkg_installed'
+
+      - name: Save vcpkg artifacts and tools to cache
+        if: always() && steps.restore-export.outputs.cache-hit == ''
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            ${{ github.workspace }}/cache
+            !${{ github.workspace }}/cache/downloads/tools
+          key: vcpkg-artifacts-${{ matrix.host-triplet }}_${{ matrix.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}-${{ github.run_id }}
+
+      - name: vcpkg export
+        if: steps.restore-export.outputs.cache-hit == ''
+        env: *vcpkg_env
+        run: |
+          cd ci/vcpkg
+          case "${{ matrix.target-triplet }}" in
+          *windows*)
+            ;;
+          *)
+            find $GITHUB_WORKSPACE/vcpkg_installed/*/lib -type f -exec strip -S '{}' ';' || true
+            find $GITHUB_WORKSPACE/vcpkg_installed/*/plugins -type f -exec strip -S '{}' ';' || true
+            find $GITHUB_WORKSPACE/vcpkg_installed/*/tools -type f -executable -exec strip -S '{}' ';' || true
+            ;;
+          esac
+          vcpkg export --raw --output-dir=$GITHUB_WORKSPACE --x-install-root=$GITHUB_WORKSPACE/vcpkg_installed
+          cd "$GITHUB_WORKSPACE"
+          mv vcpkg-export-* vcpkg-export
+          cp -a $(cd "$VCPKG_INSTALLATION_ROOT"; pwd)/scripts/toolchains vcpkg-export/scripts
+          ls -l "$VCPKG_DOWNLOADS"
+
+      - name: Save vcpkg export to cache
+        if: steps.restore-export.outputs.cache-hit == ''
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ github.workspace }}/vcpkg-export
+          key: vcpkg-export-${{ env.EXPORT_EPOCH }}-${{ matrix.host-triplet }}_${{ matrix.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}-${{ github.run_id }}
+
+      - name: Configure ${{ matrix.label }}
+        run: |
+          mkdir build
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/buildsystems/vcpkg.cmake \
+            -DCMAKE_CROSSCOMPILING=${{ case(
+              matrix.target-triplet != matrix.host-triplet, 'ON',
+              'OFF'
+            ) }} \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DVCPKG_MANIFEST_MODE=OFF \
+            -DVCPKG_HOST_TRIPLET=${{ matrix.host-triplet }} \
+            -DVCPKG_TARGET_TRIPLET=${{ matrix.target-triplet }} \
+            -DLICENSING_PROVIDER=OFF \
+            -DCMAKE_POLICY_DEFAULT_CMP0176=NEW \
+            -DCMAKE_POLICY_DEFAULT_CMP0177=NEW \
+            ${{ matrix.cmake-args }} \
+            || exit 1
+          :
+
+      - name: Build ${{ matrix.label }}
+        run: |
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
+          cmake --build build \
+            || exit 1
+          :
+
+      - name: Test ${{ matrix.label }}
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
+          DYLD_LIBRARY_PATH: ${{ github.workspace }}/vcpkg-export/installed/${{ matrix.target-triplet }}/lib
+          LD_LIBRARY_PATH: ${{ github.workspace }}/vcpkg-export/installed/${{ matrix.target-triplet }}/lib
+          GDAL_DATA: ${{ github.workspace }}/vcpkg-export/installed/${{ matrix.target-triplet }}/share/gdal
+          PROJ_DATA: ${{ github.workspace }}/vcpkg-export/installed/${{ matrix.target-triplet }}/share/proj
+          TARGET_TRIPLET: ${{ matrix.target-triplet }}
+          SKIP_POWERSHELL_POSITION_SOURCE_LIVE_TEST: 1
+          # Needs Qt 6.5
+          QT_WIN_DEBUG_CONSOLE: attach
+        run: |
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'set PATH=%GITHUB_WORKSPACE%\vcpkg-export\installed\%TARGET_TRIPLET%\bin;%PATH%', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'set QT_PLUGIN_PATH=%GITHUB_WORKSPACE%\vcpkg-export\installed\%TARGET_TRIPLET%\plugins', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'mkdir build\test\lib\fonts', '') }}
+          ctest --test-dir build --output-on-failure --timeout 30 \
+            || exit 1
+          :
+
+      - name: Package ${{ matrix.label }}
+        run: |
+          ${{ case(contains(matrix.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
+          ${{ case(contains(matrix.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
+          cmake --build build --target package \
+            || exit 1
+          :
+
+      - name: Prepare ${{ matrix.label }} upload
+        if: env.UPLOAD_ARTIFACTS == '1'
+        env:
+          ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
+        run: |
+          cmake -E tar cvf ${{ matrix.label }}.tar build/OpenOrienteering-Mapper-*
+          echo "$ARTIFACTS_KEY" > artifacts-key.asc
+          gpg --batch --yes --no-tty --trust-model always --recipient-file artifacts-key.asc --encrypt ${{ matrix.label }}.tar
+          rm artifacts-key.asc
+
+      - name: Upload ${{ matrix.label }}
+        if: env.UPLOAD_ARTIFACTS == '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }}.tar.gpg
+          path: ${{ matrix.label }}.tar.gpg
+          retention-days: 3

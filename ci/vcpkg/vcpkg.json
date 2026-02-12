@@ -1,0 +1,64 @@
+{
+  "dependencies": [
+    {
+      "name": "gdal",
+      "default-features": false,
+      "features": [
+        "archive",
+        "expat",
+        "jpeg",
+        "libkml",
+        "lzma",
+        "openjpeg",
+        "png",
+        "sqlite3",
+        "webp",
+        "zstd"
+      ]
+    },
+    {
+      "name": "libarchive",
+      "default-features": false,
+      "features": [
+        "lzma",
+        "zstd"
+      ]
+    },
+    "polyclipping",
+    {
+      "name": "proj",
+      "default-features": false,
+      "features": [
+        "tiff"
+      ]
+    },
+    {
+      "name": "tiff",
+      "features": [
+        "webp",
+        "zstd"
+      ]
+    },
+    {
+      "name": "qt5-base",
+      "default-features": false
+    },
+    {
+      "name": "qt5-imageformats",
+      "default-features": false
+    },
+    {
+      "name": "qt5-location",
+      "default-features": false
+    },
+    {
+      "name": "qt5-sensors",
+      "default-features": false
+    },
+    {
+      "name": "qt5-tools",
+      "default-features": false
+    },
+    "zlib"
+  ]
+}
