@@ -283,10 +283,6 @@ void TransformTest::testEstimateNonIsometric()
 	QVERIFY(qt.isScaling());
 	QCOMPARE(int(qt.type()), int(QTransform::TxScale));
 	
-	QCOMPARE(qt.map(passpoints[0].src_coords), QPointF{passpoints[0].dest_coords});
-	QCOMPARE(qt.map(passpoints[1].src_coords), QPointF{passpoints[1].dest_coords});
-	QCOMPARE(qt.map(passpoints[2].src_coords), QPointF{passpoints[2].dest_coords});
-	
 	auto t = TemplateTransform::fromQTransform(qt);
 	QCOMPARE(t.template_x, MapCoord(32,64).nativeX());
 	QCOMPARE(t.template_y, MapCoord(32,64).nativeY());
@@ -294,6 +290,10 @@ void TransformTest::testEstimateNonIsometric()
 	QCOMPARE(t.template_scale_y, 0.25);
 	QVERIFY(qAbs(t.template_rotation) < 0.000001);
 	QVERIFY(qAbs(t.template_shear) < 0.000001);
+	
+	QCOMPARE(qt.map(passpoints[0].src_coords), QPointF{passpoints[0].dest_coords});
+	QCOMPARE(qt.map(passpoints[1].src_coords), QPointF{passpoints[1].dest_coords});
+	QCOMPARE(qt.map(passpoints[2].src_coords), QPointF{passpoints[2].dest_coords});
 	
 	// Rotation
 	passpoints[0].src_coords  = MapCoordF { 0.0, 0.0 };
