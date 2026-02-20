@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with OpenOrienteering.  If not, see <http://www.gnu.org/licenses/>.
  
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 if(POLICY CMP0115)
     cmake_policy(SET CMP0115 NEW)
@@ -224,7 +224,7 @@ elseif(PROJ_VERSION VERSION_LESS 6.2.1)
 endif()
 
 if(Mapper_USE_GDAL)
-	find_package(GDAL REQUIRED)
+	find_package(GDAL MODULE REQUIRED)
 endif()
 
 find_package(Qt5Core 5.5 REQUIRED)
