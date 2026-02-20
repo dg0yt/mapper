@@ -167,12 +167,17 @@ public:
 	{
 		Q_ASSERT(m == b.n);
 		out.setSize(n, b.m);
-		out.setTo(0);
 		
 		for (int i = 0; i < n; ++i)
+		{
 			for (int j = 0; j < b.m; ++j)
+			{
+				double acc = 0;
 				for (int k = 0; k < m; ++k)
-					out.set(i, j, out.get(i,j) + get(i, k) * b.get(k, j));
+					acc += get(i, k) * b.get(k, j);
+				out.set(i, j, acc);
+			}
+		}
 	}
 	/** Matrix transpose. */
 	void transpose(Matrix& out)
