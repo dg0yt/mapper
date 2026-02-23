@@ -282,6 +282,11 @@ void TransformTest::testEstimateNonIsometric()
 	QVERIFY(qt.isTranslating());
 	QVERIFY(qt.isScaling());
 	QCOMPARE(int(qt.type()), int(QTransform::TxScale));
+	QCOMPARE(qt.m31(), 32.0);
+	QCOMPARE(qt.m32(), 64.0);
+	auto rotation = std::atan2(qt.m21()-qt.m12(), qt.m11()+qt.m22());
+	if(!qFuzzyIsNull(rotation))
+		QCOMPARE(rotation, 0.0);
 	
 	auto t = TemplateTransform::fromQTransform(qt);
 	QCOMPARE(t.template_x, MapCoord(32,64).nativeX());
