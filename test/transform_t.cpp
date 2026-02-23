@@ -281,6 +281,31 @@ void TransformTest::testEstimateNonIsometric()
 	QVERIFY(passpoints.estimateNonIsometricSimilarityTransform(m));
 	QCOMPARE(m.get(2, 0), 32.0);
 	QCOMPARE(m.get(5, 0), 64.0);
+	{
+		QTransform qt;
+		qt.setMatrix(
+		    m.get(0, 0), m.get(3, 0), 0,
+		    m.get(1, 0), m.get(4, 0), 0,
+		    m.get(2, 0), m.get(5, 0), 1);
+		QCOMPARE(qt.m31(), 32.0);
+		QCOMPARE(qt.m32(), 64.0);
+	}
+	{
+		QTransform qt(
+		    m.get(0, 0), m.get(3, 0), 0,
+		    m.get(1, 0), m.get(4, 0), 0,
+		    m.get(2, 0), m.get(5, 0), 1);
+		QCOMPARE(qt.m31(), 32.0);
+		QCOMPARE(qt.m32(), 64.0);
+	}
+	{
+		QTransform qt(
+		    m.get(0, 0), m.get(3, 0),
+		    m.get(1, 0), m.get(4, 0),
+		    m.get(2, 0), m.get(5, 0));
+		QCOMPARE(qt.m31(), 32.0);
+		QCOMPARE(qt.m32(), 64.0);
+	}
 	
 	QTransform qt;
 	QVERIFY(passpoints.estimateNonIsometricSimilarityTransform(&qt));
