@@ -32,6 +32,7 @@ class QXmlStreamWriter;
 
 namespace OpenOrienteering {
 
+class Matrix;
 struct TemplateTransform;
 
 
@@ -75,6 +76,9 @@ public:
 	
 	/** Estimates an affine transformation. */
 	bool estimateNonIsometricSimilarityTransform(not_null<QTransform*> out);
+	
+	/** Estimates an affine transformation. */
+	bool estimateNonIsometricSimilarityTransform(Matrix &out);
 };
 
 

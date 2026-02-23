@@ -277,6 +277,11 @@ void TransformTest::testEstimateNonIsometric()
 	passpoints[2].src_coords  = MapCoordF { 128.0, 128.0 };
 	passpoints[2].dest_coords = MapCoordF { 64.0, 96.0 };
 	
+	Matrix m;
+	QVERIFY(passpoints.estimateNonIsometricSimilarityTransform(m));
+	QCOMPARE(m.get(2, 0), 32.0);
+	QCOMPARE(m.get(5, 0), 64.0);
+	
 	QTransform qt;
 	QVERIFY(passpoints.estimateNonIsometricSimilarityTransform(&qt));
 	QVERIFY(qt.isTranslating());

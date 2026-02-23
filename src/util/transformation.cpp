@@ -311,6 +311,19 @@ bool PassPointList::estimateSimilarityTransformation(not_null<QTransform*> out)
 
 bool PassPointList::estimateNonIsometricSimilarityTransform(not_null<QTransform*> out)
 {
+	Matrix output;
+	if (!estimateNonIsometricSimilarityTransform(output))
+		return false;
+	
+	out->setMatrix(
+	    output.get(0, 0), output.get(3, 0), 0,
+	    output.get(1, 0), output.get(4, 0), 0,
+	    output.get(2, 0), output.get(5, 0), 1);
+	return true;
+}
+
+bool PassPointList::estimateNonIsometricSimilarityTransform(Matrix& output)
+{
 	auto num_pass_points = int(size());
 	Q_ASSERT(num_pass_points >= 3);
 	
@@ -366,14 +379,14 @@ bool PassPointList::estimateNonIsometricSimilarityTransform(not_null<QTransform*
 	TRACE_MATRIX(pseudo_inverse);
 	
 	// Calculate transformation parameters
-	Matrix output;
 	pseudo_inverse.multiply(values, output);
 	TRACE_MATRIX(output);
-	
+/*	
 	out->setMatrix(
 		output.get(0, 0), output.get(3, 0), 0,
 		output.get(1, 0), output.get(4, 0), 0,
 		output.get(2, 0), output.get(5, 0), 1);
+*/
 	return true;
 }
 
