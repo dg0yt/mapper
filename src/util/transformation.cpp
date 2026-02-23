@@ -326,6 +326,8 @@ bool PassPointList::estimateNonIsometricSimilarityTransform(not_null<QTransform*
 	//                       |d|
 	//                       |e|
 	//                       |f|
+
+#define TRACE_MATRIX(m) { printf("%s", #m "\n"); (m).print(); }
 	
 	Matrix mat(2*num_pass_points, 6);
 	Matrix values(2*num_pass_points, 1);
@@ -348,19 +350,25 @@ bool PassPointList::estimateNonIsometricSimilarityTransform(not_null<QTransform*
 		values.set(2*i, 0, point->dest_coords.x());
 		values.set(2*i+1, 0, point->dest_coords.y());
 	}
+	TRACE_MATRIX(mat);
+	TRACE_MATRIX(values);
 	
 	Matrix transposed;
 	mat.transpose(transposed);
+	TRACE_MATRIX(transposed);
 	
 	Matrix mat_temp, mat_temp2, pseudo_inverse;
 	transposed.multiply(mat, mat_temp);
+	TRACE_MATRIX(mat_temp);
 	if (!mat_temp.invert(mat_temp2))
 		return false;
 	mat_temp2.multiply(transposed, pseudo_inverse);
+	TRACE_MATRIX(pseudo_inverse);
 	
 	// Calculate transformation parameters
 	Matrix output;
 	pseudo_inverse.multiply(values, output);
+	TRACE_MATRIX(output);
 	
 	out->setMatrix(
 		output.get(0, 0), output.get(3, 0), 0,
