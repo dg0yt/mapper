@@ -186,6 +186,8 @@ add_unit_test(util_t ../src/util/util
 	../src/settings
 )
 
+add_unit_test(qtransform_t)
+
 # Benchmarks
 add_system_test(coord_xml_t MANUAL)
 
