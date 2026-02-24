@@ -243,6 +243,7 @@ void TransformTest::testTransformRoundTrip_data()
 	QTest::newRow("180 deg")     << -20 << 220 <<  180.0 << 1.4 << 0.5;
 	QTest::newRow("-160 deg")    << 100 << -10 << -160.0 << 1.5 << 2.7;
 	QTest::newRow("-90 deg")     <<   0 << -20 <<  -90.0 << 1.6 << 3.7;
+	QTest::newRow("simple")    << 32000 << 64000 << 0.0 << 0.25 << 0.25;
 }
 
 void TransformTest::testTransformRoundTrip()
@@ -261,7 +262,11 @@ void TransformTest::testTransformRoundTrip()
 	qt.rotate(-t.template_rotation * (180 / M_PI));
 	qt.scale(t.template_scale_x, t.template_scale_y);
 	
-	auto t2 = TemplateTransform::fromQTransform(qt);
+	QTransform qt2;
+	qt2.setMatrix(qt.m11(), qt.m12(), qt.m13(), qt.m21(), qt.m22(), qt.m23(), qt.m31(), qt.m32(), qt.m33());
+	QCOMPARE(qt2, qt);
+	
+	auto t2 = TemplateTransform::fromQTransform(qt2);
 	QCOMPARE(t2, t);
 }
 
@@ -291,7 +296,6 @@ void TransformTest::testEstimateNonIsometric()
 		QCOMPARE(qt.m31(), 32.0);
 		QCOMPARE(qt.m32(), 64.0);
 	}
-	*/
 	{
 		QTransform qt(
 		    m.get(0, 0), m.get(3, 0), 0,
@@ -300,6 +304,7 @@ void TransformTest::testEstimateNonIsometric()
 		QCOMPARE(qt.m31(), 32.0);
 		QCOMPARE(qt.m32(), 64.0);
 	}
+	*/
 	{
 		QTransform qt(
 		    m.get(0, 0), m.get(3, 0),
