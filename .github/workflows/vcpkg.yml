@@ -266,22 +266,20 @@ jobs:
           :
 
       - name: Package ${{ matrix.label }}
+        env:
+          ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
         run: |
           ${{ case(contains(matrix.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
           ${{ case(contains(matrix.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
           cmake --build build --target package \
             || exit 1
           :
-
-      - name: Prepare ${{ matrix.label }} upload
-        if: env.UPLOAD_ARTIFACTS == '1'
-        env:
-          ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
-        run: |
-          cmake -E tar cvf ${{ matrix.label }}.tar build/OpenOrienteering-Mapper-*
-          echo "$ARTIFACTS_KEY" > artifacts-key.asc
-          gpg --batch --yes --no-tty --trust-model always --recipient-file artifacts-key.asc --encrypt ${{ matrix.label }}.tar
-          rm artifacts-key.asc
+          if test "$UPLOAD_ARTIFACTS" == "1"; then
+            cmake -E tar cvf "${{ matrix.label }}.tar" build/OpenOrienteering-Mapper-*
+            echo "$ARTIFACTS_KEY" > artifacts-key.asc
+            gpg --batch --yes --no-tty --trust-model always --recipient-file artifacts-key.asc --encrypt "${{ matrix.label }}.tar"
+            rm artifacts-key.asc
+          fi
 
       - name: Upload ${{ matrix.label }}
         if: env.UPLOAD_ARTIFACTS == '1'
