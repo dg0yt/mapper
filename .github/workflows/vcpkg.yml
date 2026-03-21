@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  EXPORT_EPOCH: 0
+  EXPORT_EPOCH: 1
   UPLOAD_ARTIFACTS: ${{ case(secrets.ARTIFACTS_KEY == '', 0, 1) }}
   VERBOSE: 1
 
@@ -32,34 +32,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        label: [arm64-macos, x64-linux, x64-linux-debug, x64-macos, x64-windows]
+        # label: [arm64-macos, x64-linux, x64-linux-debug, x64-macos, x64-windows]
         include:
           - label: arm64-macos
             target-triplet: arm64-osx-dynamic-release
             host-triplet: arm64-osx-dynamic-release
             runner: macos-15
             cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake -DMapper_SYSTEM_NAME=macOS-arm64"
-          - label: x64-linux
-            target-triplet: x64-linux-dynamic-release
-            host-triplet: x64-linux-dynamic-release
-            runner: ubuntu-24.04
-            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake"
-          - label: x64-linux-debug
-            target-triplet: x64-linux-dynamic-release
-            host-triplet: x64-linux-dynamic-release
-            runner: ubuntu-24.04
-            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake -DCMAKE_BUILD_TYPE=Debug"
-          - label: x64-macos
-            target-triplet: x64-osx-dynamic-release
-            host-triplet: x64-osx-dynamic-release
-            runner: macos-15-intel
-            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake -DMapper_SYSTEM_NAME=macOS-x64"
-          - label: x64-windows
-            target-triplet: x64-windows-dynamic-release
-            host-triplet: x64-windows-dynamic-release
-            runner: windows-2025
-            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=%GITHUB_WORKSPACE%/vcpkg-export/scripts/toolchains/windows.cmake -DVCPKG_CRT_LINKAGE=dynamic -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
-            vcvars-options: x64
+          # - label: x64-linux
+          #   target-triplet: x64-linux-dynamic-release
+          #   host-triplet: x64-linux-dynamic-release
+          #   runner: ubuntu-24.04
+          #   cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake"
+          # - label: x64-linux-debug
+          #   target-triplet: x64-linux-dynamic-release
+          #   host-triplet: x64-linux-dynamic-release
+          #   runner: ubuntu-24.04
+          #   cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake -DCMAKE_BUILD_TYPE=Debug"
+          # - label: x64-macos
+          #   target-triplet: x64-osx-dynamic-release
+          #   host-triplet: x64-osx-dynamic-release
+          #   runner: macos-15-intel
+          #   cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake -DMapper_SYSTEM_NAME=macOS-x64"
+          # - label: x64-windows
+          #   target-triplet: x64-windows-dynamic-release
+          #   host-triplet: x64-windows-dynamic-release
+          #   runner: windows-2025
+          #   cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=%GITHUB_WORKSPACE%/vcpkg-export/scripts/toolchains/windows.cmake -DVCPKG_CRT_LINKAGE=dynamic -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
+          #   vcvars-options: x64
 
     runs-on: "${{ matrix.runner }}"
 
