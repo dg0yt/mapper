@@ -38,7 +38,7 @@ jobs:
             target-triplet: arm64-osx-dynamic-release
             host-triplet: arm64-osx-dynamic-release
             runner: macos-15
-            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake"
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake -DMapper_SYSTEM_NAME=macOS-arm64"
           - label: x64-linux
             target-triplet: x64-linux-dynamic-release
             host-triplet: x64-linux-dynamic-release
@@ -53,7 +53,7 @@ jobs:
             target-triplet: x64-osx-dynamic-release
             host-triplet: x64-osx-dynamic-release
             runner: macos-15-intel
-            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake"
+            cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake -DMapper_SYSTEM_NAME=macOS-x64"
           - label: x64-windows
             target-triplet: x64-windows-dynamic-release
             host-triplet: x64-windows-dynamic-release
