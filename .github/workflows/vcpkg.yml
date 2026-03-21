@@ -220,18 +220,16 @@ jobs:
           ${{ case(contains(matrix.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
           cmake -S . -B build \
             -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/buildsystems/vcpkg.cmake \
-            -DCMAKE_CROSSCOMPILING=${{ case(
-              matrix.target-triplet != matrix.host-triplet, 'ON',
-              'OFF'
-            ) }} \
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DVCPKG_MANIFEST_MODE=OFF \
-            -DVCPKG_HOST_TRIPLET=${{ matrix.host-triplet }} \
             -DVCPKG_TARGET_TRIPLET=${{ matrix.target-triplet }} \
-            -DLICENSING_PROVIDER=vcpkg \
+            -DVCPKG_HOST_TRIPLET=${{ matrix.host-triplet }} \
+            -DVCPKG_MANIFEST_MODE=OFF \
+            -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/buildsystems/vcpkg.cmake \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_CROSSCOMPILING=${{ case(matrix.target-triplet != matrix.host-triplet, 'ON', 'OFF') }} \
             -DCMAKE_POLICY_DEFAULT_CMP0176=NEW \
             -DCMAKE_POLICY_DEFAULT_CMP0177=NEW \
+            -DCMAKE_SUPPRESS_REGENERATION=ON \
+            -DLICENSING_PROVIDER=vcpkg \
             ${{ matrix.cmake-args }} \
             || exit 1
           :
@@ -266,6 +264,7 @@ jobs:
           :
 
       - name: Package ${{ matrix.label }}
+        id: packaging
         env:
           ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
         run: |
@@ -275,16 +274,30 @@ jobs:
             || exit 1
           :
           if test "$UPLOAD_ARTIFACTS" == "1"; then
-            cmake -E tar cvf "${{ matrix.label }}.tar" build/OpenOrienteering-Mapper-*
+            ARTIFACT_NAME=artifact
             echo "$ARTIFACTS_KEY" > artifacts-key.asc
-            gpg --batch --yes --no-tty --trust-model always --recipient-file artifacts-key.asc --encrypt "${{ matrix.label }}.tar"
+            for ARTIFACT in build/OpenOrienteering-Mapper-* ; do
+              gpg --batch --yes --no-tty --trust-model always --recipient-file artifacts-key.asc --encrypt "$ARTIFACT"
+              echo ${ARTIFACT_NAME}=${ARTIFACT}.gpg | tee -a "$GITHUB_OUTPUT"
+              ARTIFACT_NAME=${ARTIFACT_NAME}_2
+            done
             rm artifacts-key.asc
           fi
 
       - name: Upload ${{ matrix.label }}
-        if: env.UPLOAD_ARTIFACTS == '1'
+        if: steps.packaging.outputs.artifact != ''
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.label }}.tar.gpg
-          path: ${{ matrix.label }}.tar.gpg
-          retention-days: 3
+          path: ${{ steps.packaging.outputs.artifact }}
+          archive: false
+          compression-level: 0
+          retention-days: 7
+
+      - name: Upload ${{ matrix.label }} (2)
+        if: steps.packaging.outputs.artifact_2 != ''
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.packaging.outputs.artifact_2 }}
+          archive: false
+          compression-level: 0
+          retention-days: 7
