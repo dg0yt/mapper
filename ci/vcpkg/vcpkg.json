@@ -33,13 +33,6 @@
       ]
     },
     {
-      "name": "tiff",
-      "features": [
-        "webp",
-        "zstd"
-      ]
-    },
-    {
       "name": "qt5-base",
       "default-features": false
     },
@@ -58,6 +51,14 @@
     {
       "name": "qt5-tools",
       "default-features": false
+    },
+    "qt5-translations",
+    {
+      "name": "tiff",
+      "features": [
+        "webp",
+        "zstd"
+      ]
     },
     "zlib"
   ]
