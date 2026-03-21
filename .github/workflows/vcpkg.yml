@@ -229,7 +229,7 @@ jobs:
             -DVCPKG_MANIFEST_MODE=OFF \
             -DVCPKG_HOST_TRIPLET=${{ matrix.host-triplet }} \
             -DVCPKG_TARGET_TRIPLET=${{ matrix.target-triplet }} \
-            -DLICENSING_PROVIDER=OFF \
+            -DLICENSING_PROVIDER=vcpkg \
             -DCMAKE_POLICY_DEFAULT_CMP0176=NEW \
             -DCMAKE_POLICY_DEFAULT_CMP0177=NEW \
             ${{ matrix.cmake-args }} \
