@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  EXPORT_EPOCH: 1
+  EXPORT_EPOCH: 0
   UPLOAD_ARTIFACTS: ${{ case(secrets.ARTIFACTS_KEY == '', 0, 1) }}
   VERBOSE: 1
 
