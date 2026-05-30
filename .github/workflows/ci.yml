@@ -80,5 +80,4 @@ jobs:
       runner: windows-2025-vs2026
       restore_export: ${{ inputs.restore_export != 'false' }}
       cmake-args: "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=%GITHUB_WORKSPACE%/vcpkg-export/scripts/toolchains/windows.cmake -DVCPKG_CRT_LINKAGE=dynamic -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
-      vcvars-options: x64
     secrets: inherit

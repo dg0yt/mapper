@@ -3,3 +3,4 @@ rules:
     config:
       policies:
         dg0yt/mapper: any
+        actions/*: ref-pin
