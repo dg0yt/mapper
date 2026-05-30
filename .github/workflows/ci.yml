@@ -12,7 +12,7 @@ on:
       restore_export:
         description: 'Restore vcpkg export from cache'
         type: boolean
-        default: ${{ true }}
+        default: true
       target_pattern:
         description: 'Build jobs matching this pattern'
         type: string

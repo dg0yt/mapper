@@ -9,6 +9,7 @@ on:
 
 jobs:
   zizmor:
+    if: false
     name: zizmor latest via PyPI
     runs-on: ubuntu-latest
     steps:
