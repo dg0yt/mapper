@@ -18,9 +18,6 @@ on:
       cmake-args:
         required: true
         type: string
-      vcvars-options:
-        type: string
-        default: ""
     secrets:
       ARTIFACTS_KEY:
         required: false
@@ -85,7 +82,15 @@ jobs:
             sha1sum | \
             (read HASH FILE; echo hash=$HASH) | \
             tee -a "$GITHUB_OUTPUT"
-          echo 'CALL_VCVARSALL=call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ inputs.vcvars-options }}' >> "$GITHUB_ENV"
+          case "$HOST_TRIPLET;$TARGET_TRIPLET" in
+          x64*,x64*)
+            VCVARS_ARCHITECTURE=x64
+            ;;
+          *)
+            VCVARS_ARCHITECTURE=unknown
+            ;;
+          esac
+          echo 'CALL_VCVARSALL=call "C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ' "$VCVARS_ARCHITECTURE" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg export
         id: restore-export
@@ -191,6 +196,8 @@ jobs:
           key: vcpkg-export-${{ env.EXPORT_EPOCH }}-${{ inputs.host-triplet }}_${{ inputs.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}-${{ github.run_id }}
 
       - name: Configure
+        env:
+          CMAKE_ARGS: ${{ inputs.cmake-args }}
         run: |
           mkdir build
           ${{ case(contains(inputs.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
@@ -207,7 +214,7 @@ jobs:
             -DCMAKE_POLICY_DEFAULT_CMP0177=NEW \
             -DCMAKE_SUPPRESS_REGENERATION=ON \
             -DLICENSING_PROVIDER=vcpkg \
-            ${{ inputs.cmake-args }} \
+            $CMAKE_ARGS \
             || exit 1
           :
 
