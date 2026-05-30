@@ -16,8 +16,8 @@ on:
         type: boolean
         default: true
       cmake-args:
-        required: true
         type: string
+        default: ""
     secrets:
       ARTIFACTS_KEY:
         required: false
@@ -82,6 +82,21 @@ jobs:
             sha1sum | \
             (read HASH FILE; echo hash=$HASH) | \
             tee -a "$GITHUB_OUTPUT"
+          case "$TARGET_TRIPLET" in
+          *-linux*)
+            TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake"
+            ;;
+          *-osx*)
+            TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/osx.cmake"
+            ;;
+          *-windows*)
+            TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/windows.cmake"
+            ;;
+          *)
+            TOOLCHAIN_FILE="unknown"
+            ;;
+          esac
+          echo "TOOLCHAIN_FILE=${TOOLCHAIN_FILE}" >> "$GITHUB_ENV"
           case "$HOST_TRIPLET;$TARGET_TRIPLET" in
           x64*,x64*)
             VCVARS_ARCHITECTURE=x64
@@ -204,6 +219,7 @@ jobs:
           ${{ case(contains(inputs.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
           cmake -S . -B build \
             -G Ninja \
+            -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
             -DVCPKG_TARGET_TRIPLET=$TARGET_TRIPLET \
             -DVCPKG_HOST_TRIPLET=$HOST_TRIPLET \
             -DVCPKG_MANIFEST_MODE=OFF \
