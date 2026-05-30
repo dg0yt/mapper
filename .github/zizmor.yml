@@ -2,5 +2,5 @@ rules:
   unpinned-uses:
     config:
       policies:
-        dg0yt/mapper: any
+        dg0yt/mapper/.github/workflows/vcpkg.yml: any
         actions/*: ref-pin

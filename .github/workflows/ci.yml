@@ -16,7 +16,7 @@ on:
       target_pattern:
         description: 'Build jobs matching this pattern'
         type: string
-        default: "^arm64"
+        default: "^"
 
   # Keep cache alive
   schedule:
@@ -31,9 +31,9 @@ jobs:
     if: ${{ contains('^arm64-macos$', inputs.target_pattern) }}
     uses: dg0yt/mapper/.github/workflows/vcpkg.yml@vcpkg
     with:
+      runner: macos-15
       target-triplet: arm64-osx-dynamic-release
       host-triplet: arm64-osx-dynamic-release
-      runner: macos-15
       restore_export: ${{ inputs.restore_export != 'false' }}
       cmake-args: "-DMapper_SYSTEM_NAME=macOS-arm64"
     secrets: inherit
@@ -42,9 +42,9 @@ jobs:
     if: ${{ contains('^x64-linux$', inputs.target_pattern) }}
     uses: dg0yt/mapper/.github/workflows/vcpkg.yml@vcpkg
     with:
+      runner: ubuntu-24.04
       target-triplet: x64-linux-dynamic-release
       host-triplet: x64-linux-dynamic-release
-      runner: ubuntu-24.04
       restore_export: ${{ inputs.restore_export != 'false' }}
     secrets: inherit
 
@@ -52,9 +52,9 @@ jobs:
     if: ${{ contains('^x64-linux-debug$', inputs.target_pattern) }}
     uses: dg0yt/mapper/.github/workflows/vcpkg.yml@vcpkg
     with:
+      runner: ubuntu-24.04
       target-triplet: x64-linux-dynamic-release
       host-triplet: x64-linux-dynamic-release
-      runner: ubuntu-24.04
       restore_export: ${{ inputs.restore_export != 'false' }}
       cmake-args: -DCMAKE_BUILD_TYPE=Debug
     secrets: inherit
@@ -63,9 +63,9 @@ jobs:
     if: ${{ contains('^x64-macos$', inputs.target_pattern) }}
     uses: dg0yt/mapper/.github/workflows/vcpkg.yml@vcpkg
     with:
+      runner: macos-15-intel
       target-triplet: x64-osx-dynamic-release
       host-triplet: x64-osx-dynamic-release
-      runner: macos-15-intel
       restore_export: ${{ inputs.restore_export != 'false' }}
       cmake-args: "-DMapper_SYSTEM_NAME=macOS-x64"
     secrets: inherit
@@ -74,9 +74,9 @@ jobs:
     if: ${{ contains('^x64-windows$', inputs.target_pattern) }}
     uses: dg0yt/mapper/.github/workflows/vcpkg.yml@vcpkg
     with:
+      runner: windows-2025-vs2026
       target-triplet: x64-windows-dynamic-release
       host-triplet: x64-windows-dynamic-release
-      runner: windows-2025-vs2026
       restore_export: ${{ inputs.restore_export != 'false' }}
       cmake-args: "-DVCPKG_CRT_LINKAGE=dynamic -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
     secrets: inherit
