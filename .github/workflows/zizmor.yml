@@ -3,10 +3,10 @@ name: GHA security analysis (zizmor)
 on:
   push:
     branches: [ "master", "vcpkg" ]
-    paths: .github
+    paths: [ '.github/**' ]
   pull_request:
     branches: [ "master", "vcpkg" ]
-    paths: .github
+    paths: [ '.github/**' ]
   workflow_dispatch:
 
 permissions: {}
