@@ -26,6 +26,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   arm64-macos:
     if: ${{ contains('^arm64-macos$', inputs.target_pattern) }}
