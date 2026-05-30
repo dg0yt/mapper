@@ -3,9 +3,6 @@ name: Build with vcpkg
 on:
   workflow_call:
     inputs:
-      label:
-        required: true
-        type: string
       runner:
         required: true
         type: string
@@ -30,7 +27,10 @@ on:
 
 env:
   EXPORT_EPOCH: 0
+  RUNNER: ${{ inputs.runner }}
   UPLOAD_ARTIFACTS: ${{ case(secrets.ARTIFACTS_KEY == '', 0, 1) }}
+  HOST_TRIPLET: ${{ inputs.host-triplet }}
+  TARGET_TRIPLET: ${{ inputs.target-triplet }}
   VERBOSE: 1
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
 
       - name: Install direct system dependencies
         run: |
-          case "${{ inputs.runner }}" in
+          case "$RUNNER" in
           macos*)
             brew install doxygen
             brew --prefix
@@ -78,7 +78,7 @@ jobs:
           cd ci/vcpkg
           CONFIGURATION=$( \
             find vcpkg.json vcpkg-configuration.json overlay-ports overlay-triplets -type f -exec sha1sum '{}' ';' | \
-            sed -e '/overlay-triplets[/]/ {' -e '/[/]${{ inputs.host-triplet }}[.]cmake/ p' -e '/[/]${{ inputs.target-triplet }}[.]cmake/ p' -e 'd' -e '}' |
+            sed -e '/overlay-triplets[/]/ {' -e "/[/]$HOST_TRIPLET[.]cmake/ p" -e "/[/]$TARGET_TRIPLET[.]cmake/ p" -e 'd' -e '}' |
             sort -u)
           echo "$CONFIGURATION"
           echo "$CONFIGURATION" |
@@ -111,7 +111,7 @@ jobs:
       - name: Install transitive system dependencies
         if: steps.restore-export.outputs.cache-hit == ''
         run: |
-          case "${{ inputs.runner }},$RUNNER_ARCH" in
+          case '$RUNNER,$RUNNER_ARCH" in
           macos*,X64)
             brew install \
               autoconf-archive automake
@@ -152,7 +152,7 @@ jobs:
         env: *vcpkg_env
         run: |
           cd ci/vcpkg
-          vcpkg install --host-triplet=${{ inputs.host-triplet }} --triplet=${{ inputs.target-triplet }} --x-install-root='${{ github.workspace }}/vcpkg_installed'
+          vcpkg install --host-triplet="$HOST_TRIPLET" --triplet="$TARGET_TRIPLET" --x-install-root='${{ github.workspace }}/vcpkg_installed'
 
       - name: Save vcpkg artifacts and tools to cache
         if: always() && steps.restore-export.outputs.cache-hit == ''
@@ -168,7 +168,7 @@ jobs:
         env: *vcpkg_env
         run: |
           cd ci/vcpkg
-          case "${{ inputs.target-triplet }}" in
+          case "$TARGET_TRIPLET" in
           *windows*)
             ;;
           *)
@@ -190,15 +190,15 @@ jobs:
           path: ${{ github.workspace }}/vcpkg-export
           key: vcpkg-export-${{ env.EXPORT_EPOCH }}-${{ inputs.host-triplet }}_${{ inputs.target-triplet }}_${{ steps.vcpkg-configuration.outputs.hash }}-${{ github.run_id }}
 
-      - name: Configure ${{ inputs.label }}
+      - name: Configure
         run: |
           mkdir build
           ${{ case(contains(inputs.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
           ${{ case(contains(inputs.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
           cmake -S . -B build \
             -G Ninja \
-            -DVCPKG_TARGET_TRIPLET=${{ inputs.target-triplet }} \
-            -DVCPKG_HOST_TRIPLET=${{ inputs.host-triplet }} \
+            -DVCPKG_TARGET_TRIPLET=$TARGET_TRIPLET \
+            -DVCPKG_HOST_TRIPLET=$HOST_TRIPLET \
             -DVCPKG_MANIFEST_MODE=OFF \
             -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg-export/scripts/buildsystems/vcpkg.cmake \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -211,7 +211,7 @@ jobs:
             || exit 1
           :
 
-      - name: Build ${{ inputs.label }}
+      - name: Build
         run: |
           ${{ case(contains(inputs.target-triplet, 'windows'), 'cat << : | cmd /D /E:ON /V:OFF /K echo off', '') }}
           ${{ case(contains(inputs.target-triplet, 'windows'), '$CALL_VCVARSALL', '') }}
@@ -219,7 +219,7 @@ jobs:
             || exit 1
           :
 
-      - name: Test ${{ inputs.label }}
+      - name: Test
         env:
           CTEST_OUTPUT_ON_FAILURE: 1
           DYLD_LIBRARY_PATH: ${{ github.workspace }}/vcpkg-export/installed/${{ inputs.target-triplet }}/lib
@@ -240,7 +240,7 @@ jobs:
             || exit 1
           :
 
-      - name: Package ${{ inputs.label }}
+      - name: Package
         id: packaging
         env:
           ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
@@ -261,7 +261,7 @@ jobs:
             rm artifacts-key.asc
           fi
 
-      - name: Upload ${{ inputs.label }}
+      - name: Upload
         if: steps.packaging.outputs.artifact != ''
         uses: actions/upload-artifact@v7
         with:
@@ -270,7 +270,7 @@ jobs:
           compression-level: 0
           retention-days: 7
 
-      - name: Upload ${{ inputs.label }} (2)
+      - name: Upload (2)
         if: steps.packaging.outputs.artifact_2 != ''
         uses: actions/upload-artifact@v7
         with:
