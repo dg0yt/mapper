@@ -1,0 +1,26 @@
+name: GHA security analysis (zizmor)
+
+on:
+  push:
+    branches: [ "master", "vcpkg" ]
+  pull_request:
+    branches: [ "master", "vcpkg" ]
+  workflow_dispatch:
+
+jobs:
+  zizmor:
+    name: zizmor latest via PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+
+      - name: Run zizmor
+        run: uvx zizmor --format=github .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
