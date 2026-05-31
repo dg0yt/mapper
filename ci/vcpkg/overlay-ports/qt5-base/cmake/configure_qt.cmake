@@ -4,11 +4,36 @@ function(configure_qt)
     if(NOT _csc_TARGET_PLATFORM)
         message(FATAL_ERROR "configure_qt requires a TARGET_PLATFORM argument.")
     endif()
-    
+
+    vcpkg_cmake_get_vars(detected_file)
+    include("${detected_file}")
+
+    if(NOT _csc_TARGET_PLATFORM STREQUAL _csc_HOST_PLATFORM)
+        list(APPEND _csc_OPTIONS -xplatform ${_csc_TARGET_PLATFORM})
+#        list(APPEND _csc_OPTIONS "QMAKE_PKG_CONFIG=${PKGCONFIG}")
+    endif()
+    if(VCPKG_TARGET_IS_ANDROID)
+        list(APPEND _csc_OPTIONS
+            -android-abis "${VCPKG_DETECTED_CMAKE_ANDROID_ARCH_ABI}"
+            -android-ndk-platform "${VCPKG_DETECTED_CMAKE_SYSTEM_VERSION}"
+            -android-ndk "${VCPKG_DETECTED_CMAKE_ANDROID_NDK}"
+            -android-ndk-host "${VCPKG_DETECTED_CMAKE_ANDROID_NDK_TOOLCHAIN_HOST_TAG}"
+        )
+        # ANDROID_HOME: canonical SDK environment variable
+        # ANDROID_SDK_ROOT: legacy qtbase triplet variable
+        if(NOT ANDROID_SDK_ROOT)
+            if("$ENV{ANDROID_HOME}" STREQUAL "")
+                message(FATAL_ERROR "${PORT} requires environment variable ANDROID_HOME to be set.")
+            endif()
+            set(ANDROID_SDK_ROOT "$ENV{ANDROID_HOME}")
+        endif()
+        list(APPEND _csc_OPTIONS -android-sdk "${ANDROID_SDK_ROOT}")
+    endif()
+
     if(DEFINED _csc_HOST_PLATFORM)
         list(APPEND _csc_OPTIONS -platform ${_csc_HOST_PLATFORM})
     endif()
-    
+
     if(DEFINED _csc_HOST_TOOLS_ROOT)
         ## vcpkg internal file struture assumed here!
         message(STATUS "Building Qt with prepared host tools from ${_csc_HOST_TOOLS_ROOT}!")
@@ -29,12 +54,10 @@ function(configure_qt)
     #Cleanup previous build folders
     file(REMOVE_RECURSE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg")
 
-    vcpkg_cmake_get_vars(detected_file)
-    include("${detected_file}")
     function(qmake_append_program var qmake_var value)
         get_filename_component(prog "${value}" NAME)
         # QMake assumes everything is on PATH?
-        vcpkg_list(APPEND ${var} "${qmake_var}=${prog}")
+        vcpkg_list(APPEND ${var} "${qmake_var}=${value}")
         find_program(${qmake_var} NAMES "${prog}")
         cmake_path(COMPARE "${${qmake_var}}" EQUAL "${value}" correct_prog_on_path)
         if(NOT correct_prog_on_path AND NOT "${value}" MATCHES "|:")
@@ -170,7 +193,6 @@ function(configure_qt)
                 -I ${CURRENT_INSTALLED_DIR}/include/qt5
                 -L ${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib 
                 -L ${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib/manual-link
-                -platform ${_csc_TARGET_PLATFORM}
             )
 
         if(DEFINED _csc_HOST_TOOLS_ROOT) #use qmake
