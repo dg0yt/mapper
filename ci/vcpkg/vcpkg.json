@@ -1,6 +1,18 @@
 {
   "dependencies": [
     {
+      "$comment": "qt5-base needs qt5-base:host needs fontconfig:host.",
+      "name": "fontconfig",
+      "host": true,
+      "default-features": false
+    },
+    {
+      "$comment": "qt5-base needs qt5-base:host needs freetype:host.",
+      "name": "freetype",
+      "host": true,
+      "default-features": false
+    },
+    {
       "name": "gdal",
       "default-features": false,
       "features": [
@@ -17,6 +29,7 @@
       ]
     },
     {
+      "$comment": "gdal needs libarchive.",
       "name": "libarchive",
       "default-features": false,
       "features": [
@@ -37,6 +50,12 @@
       "default-features": false
     },
     {
+      "$comment": "qt5-base needs qt5-base:host.",
+      "name": "qt5-base",
+      "host": true,
+      "default-features": false
+    },
+    {
       "name": "qt5-imageformats",
       "default-features": false
     },
@@ -54,6 +73,7 @@
     },
     "qt5-translations",
     {
+      "$comment": "gdal, proj, qt5-base need tiff.",
       "name": "tiff",
       "features": [
         "webp",
