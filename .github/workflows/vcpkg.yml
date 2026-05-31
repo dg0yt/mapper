@@ -31,7 +31,7 @@ env:
   VERBOSE: 1
 
 jobs:
-  build:
+  vcpkg:
     strategy:
       fail-fast: false
 
@@ -133,7 +133,7 @@ jobs:
       - name: Install transitive system dependencies
         if: steps.restore-export.outputs.cache-hit == ''
         run: |
-          case '$RUNNER,$RUNNER_ARCH" in
+          case "$RUNNER,$RUNNER_ARCH" in
           macos*,X64)
             brew install \
               autoconf-archive automake
