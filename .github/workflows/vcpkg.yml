@@ -31,7 +31,7 @@ env:
   VERBOSE: 1
 
 jobs:
-  ci:
+  build:
     strategy:
       fail-fast: false
 
@@ -100,7 +100,7 @@ jobs:
           esac
           echo "TOOLCHAIN_FILE=${TOOLCHAIN_FILE}" >> "$GITHUB_ENV"
           case "$HOST_TRIPLET,$TARGET_TRIPLET" in
-          x64*,x64*)
+          x64-*,x64-*)
             VCVARS_ARCHITECTURE=x64
             ;;
           *)
