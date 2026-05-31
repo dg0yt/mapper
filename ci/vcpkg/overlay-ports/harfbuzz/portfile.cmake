@@ -76,6 +76,10 @@ else()
     list(APPEND OPTIONS -Dintrospection=disabled)
 endif()
 
+if(VCPKG_TARGET_IS_ANDROID)
+    list(APPEND OPTIONS -Dwith_libstdcxx=true)
+endif()
+
 set(cxx_link_libraries "")
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     block(PROPAGATE cxx_link_libraries)
