@@ -8,9 +8,12 @@ function(configure_qt)
     vcpkg_cmake_get_vars(detected_file)
     include("${detected_file}")
 
-    if(NOT _csc_TARGET_PLATFORM STREQUAL _csc_HOST_PLATFORM)
-        list(APPEND _csc_OPTIONS -xplatform ${_csc_TARGET_PLATFORM})
-#        list(APPEND _csc_OPTIONS "QMAKE_PKG_CONFIG=${PKGCONFIG}")
+    if(_csc_HOST_PLATFORM AND NOT _csc_HOST_PLATFORM STREQUAL csc_TARGET_PLATFORM)
+        list(APPEND _csc_OPTIONS -xplatform ${_csc_TARGET_PLATFORM} -platform ${_csc_HOST_PLATFORM})
+    elseif(VCPKG_TARGET_IS_ANDROID)
+        list(APPEND _csc_OPTIONS -xplatform ${_csc_TARGET_PLATFORM})  # host detected by qt
+    else()
+        list(APPEND _csc_OPTIONS -platform ${_csc_TARGET_PLATFORM})   # native
     endif()
     if(VCPKG_TARGET_IS_ANDROID)
         list(APPEND _csc_OPTIONS
@@ -28,10 +31,6 @@ function(configure_qt)
             set(ANDROID_SDK_ROOT "$ENV{ANDROID_HOME}")
         endif()
         list(APPEND _csc_OPTIONS -android-sdk "${ANDROID_SDK_ROOT}")
-    endif()
-
-    if(DEFINED _csc_HOST_PLATFORM)
-        list(APPEND _csc_OPTIONS -platform ${_csc_HOST_PLATFORM})
     endif()
 
     if(DEFINED _csc_HOST_TOOLS_ROOT)
