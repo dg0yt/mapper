@@ -19,11 +19,6 @@ if ("mysqlplugin" IN_LIST FEATURES)
     set(WITH_MYSQL_PLUGIN  ON)
 endif()
 
-set(WITH_OPENSSL OFF)
-if ("openssl" IN_LIST FEATURES)
-    set(WITH_OPENSSL ON)
-endif()
-
 include(qt_port_functions)
 include(configure_qt)
 include(install_qt)
@@ -50,6 +45,7 @@ set(PATCHES
     patches/CVE-2025-5455-qtbase-5.15.patch
     patches/CVE-2025-30348-qtbase-5.15.diff
 
+    patches/android.diff
     patches/winmain_pro.patch          #Moves qtmain to manual-link
     patches/windows_prf.patch          #fixes the qtmain dependency due to the above move
     patches/qt_app.patch               #Moves the target location of qt5 host apps to always install into the host dir.
@@ -87,7 +83,7 @@ endif()
 qt_download_submodule(OUT_SOURCE_PATH SOURCE_PATH PATCHES ${PATCHES})
 
 # Remove vendored dependencies to ensure they are not picked up by the build
-foreach(DEPENDENCY IN ITEMS double-conversion freetype harfbuzz-ng libjpeg libpng md4c pcre2 sqlite zlib)
+foreach(DEPENDENCY IN ITEMS double-conversion freetype harfbuzz-ng libjpeg libpng md4c pcre2 sqlite #[[zlib]])
     file(REMOVE_RECURSE "${SOURCE_PATH}/src/3rdparty/${DEPENDENCY}")
 endforeach()
 
@@ -133,12 +129,6 @@ if(WITH_MYSQL_PLUGIN)
     list(APPEND CORE_OPTIONS -sql-mysql)
 else()
     list(APPEND CORE_OPTIONS -no-sql-mysql)
-endif()
-
-if(WITH_OPENSSL)
-    list(APPEND CORE_OPTIONS -openssl-linked)
-else()
-    list(APPEND CORE_OPTIONS -no-openssl)
 endif()
 
 if("cups" IN_LIST FEATURES)
@@ -231,6 +221,15 @@ if(NOT VCPKG_TARGET_IS_WINDOWS)
     list(APPEND DEBUG_OPTIONS "FONTCONFIG_LIBS=${fontconfig_LIBS_DEBUG}")
 endif()
 
+if("openssl" IN_LIST FEATURES)
+    list(APPEND CORE_OPTIONS -openssl-linked)
+    x_vcpkg_pkgconfig_get_modules(PREFIX openssl MODULES openssl LIBS)
+    list(APPEND RELEASE_OPTIONS "OPENSSL_LIBS=${openssl_LIBS_RELEASE}")
+    list(APPEND DEBUG_OPTIONS "OPENSSL_LIBS=${openssl_LIBS_DEBUG}")
+else()
+    list(APPEND CORE_OPTIONS -no-openssl)
+endif()
+
 if("postgresqlplugin" IN_LIST FEATURES)
     list(APPEND CORE_OPTIONS -sql-psql)
     x_vcpkg_pkgconfig_get_modules(PREFIX libpq MODULES libpq LIBS)
@@ -289,19 +288,11 @@ if(VCPKG_TARGET_IS_WINDOWS)
     endif()
     set(ADDITIONAL_WINDOWS_LIBS "-lws2_32 -lsecur32 -ladvapi32 -lshell32 -lcrypt32 -luser32 -lgdi32")
 
-    if(WITH_OPENSSL)
-        list(APPEND RELEASE_OPTIONS "OPENSSL_LIBS=${SSL_RELEASE} ${EAY_RELEASE} ${ADDITIONAL_WINDOWS_LIBS}")
-        list(APPEND DEBUG_OPTIONS "OPENSSL_LIBS=${SSL_DEBUG} ${EAY_DEBUG} ${ADDITIONAL_WINDOWS_LIBS}")
-    else()
+    if(NOT "openssl" IN_LIST FEATURES)
         list(APPEND CORE_OPTIONS -schannel)
     endif()
 elseif(VCPKG_TARGET_IS_LINUX)
     list(APPEND CORE_OPTIONS -xcb-xlib -xcb -linuxfb)
-
-    if(WITH_OPENSSL)
-        list(APPEND RELEASE_OPTIONS "OPENSSL_LIBS=${SSL_RELEASE} ${EAY_RELEASE} -ldl -lpthread")
-        list(APPEND DEBUG_OPTIONS "OPENSSL_LIBS=${SSL_DEBUG} ${EAY_DEBUG} -ldl -lpthread")
-    endif()
 elseif(VCPKG_TARGET_IS_OSX)
     if (VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
         # Avoid frameworks for vcpkg
@@ -361,11 +352,6 @@ elseif(VCPKG_TARGET_IS_OSX)
     string(REPLACE "QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13" "QMAKE_MACOSX_DEPLOYMENT_TARGET = ${VCPKG_OSX_DEPLOYMENT_TARGET}" _tmp_contents ${_tmp_contents})
     file(WRITE "${SOURCE_PATH}/mkspecs/common/macx.conf" ${_tmp_contents})
     #list(APPEND QT_PLATFORM_CONFIGURE_OPTIONS HOST_PLATFORM ${TARGET_MKSPEC})
-
-    if(WITH_OPENSSL)
-        list(APPEND RELEASE_OPTIONS "OPENSSL_LIBS=${SSL_RELEASE} ${EAY_RELEASE} -ldl -lpthread")
-        list(APPEND DEBUG_OPTIONS "OPENSSL_LIBS=${SSL_DEBUG} ${EAY_DEBUG} -ldl -lpthread")
-    endif()
 endif()
 
 if (WITH_MYSQL_PLUGIN)
