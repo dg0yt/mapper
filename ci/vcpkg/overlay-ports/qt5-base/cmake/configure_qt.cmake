@@ -16,6 +16,8 @@ function(configure_qt)
         list(APPEND _csc_OPTIONS -platform ${_csc_TARGET_PLATFORM})   # native
     endif()
     if(VCPKG_TARGET_IS_ANDROID)
+        cmake_path(GET VCPKG_DETECTED_CMAKE_CXX_COMPILER PARENT_PATH ndk_bin_dir)
+        vcpkg_add_to_path(PREPEND "${ndk_bin_dir}")
         list(APPEND _csc_OPTIONS
             -android-abis "${VCPKG_DETECTED_CMAKE_ANDROID_ARCH_ABI}"
             -android-ndk-platform "${VCPKG_DETECTED_CMAKE_SYSTEM_VERSION}"
@@ -54,13 +56,14 @@ function(configure_qt)
     file(REMOVE_RECURSE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg")
 
     function(qmake_append_program var qmake_var value)
-        get_filename_component(prog "${value}" NAME)
-        # QMake assumes everything is on PATH?
-        vcpkg_list(APPEND ${var} "${qmake_var}=${value}")
-        find_program(${qmake_var} NAMES "${prog}")
+        # QMake assumes everything is on PATH, and
+        # cl.exe may have path with space ("Program Files").
+        cmake_path(GET value FILENAME prog)
+        vcpkg_list(APPEND ${var} "${qmake_var}=${prog}")
+        find_program(${qmake_var} NAMES "${prog}" PATHS ENV PATH NO_DEFAULT_PATH)
         cmake_path(COMPARE "${${qmake_var}}" EQUAL "${value}" correct_prog_on_path)
-        if(NOT correct_prog_on_path AND NOT "${value}" MATCHES "|:")
-            message(FATAL_ERROR "Detect path mismatch for '${qmake_var}'. '${value}' is not the same as '${${qmake_var}}'. Please correct your PATH!")
+        if(NOT correct_prog_on_path AND NOT "${value}" MATCHES "^$|^:$")
+            message(FATAL_ERROR "Detected path mismatch for '${qmake_var}'. '${value}' is not the same as '${${qmake_var}}'. Please correct your PATH!)")
         endif()
         unset(${qmake_var})
         unset(${qmake_var} CACHE)
