@@ -15,7 +15,13 @@
         "sqlite3plugin"
       ]
     },
-    "qt5-declarative"
+    "qt5-declarative",
+    {
+      "name": "qt5-tools",
+      "host": true,
+      "default-features": false,
+      "platform": "android"
+    }
   ],
   "features": {
     "qdoc": {

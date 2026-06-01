@@ -20,3 +20,11 @@ qt_submodule_installation(
 if(EXISTS "${CURRENT_INSTALLED_DIR}/plugins/platforms/qminimal${VCPKG_TARGET_SHARED_LIBRARY_SUFFIX}")
     file(INSTALL "${CURRENT_INSTALLED_DIR}/plugins/platforms/qminimal${VCPKG_TARGET_SHARED_LIBRARY_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin/plugins/platforms")
 endif()
+
+if(VCPKG_TARGET_IS_ANDROID)
+    vcpkg_copy_tools(
+        TOOL_NAMES lconvert lrelease lupdate qcollectiongenerator qhelpgenerator
+        DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/bin"
+        SEARCH_DIR "${CURRENT_HOST_INSTALLED_DIR}/tools/qt5/bin"
+    )
+endif()
