@@ -1,9 +1,20 @@
 
 function(qt_build_submodule SOURCE_PATH)
+    # similar to configure_qt
     if(NOT PORT STREQUAL "qt5-webengine")
         vcpkg_find_acquire_program(PYTHON3)
-        get_filename_component(PYTHON3_EXE_PATH ${PYTHON3} DIRECTORY)
+        cmake_path(GET PYTHON3 PARENT_PATH PYTHON3_EXE_PATH)
         vcpkg_add_to_path("${PYTHON3_EXE_PATH}")
+    endif()
+
+    if(VCPKG_TARGET_IS_ANDROID)
+        if(NOT COMMAND vcpkg_cmake_get_vars)
+            include("${CURRENT_HOST_INSTALLED_DIR}/share/vcpkg-cmake-get-vars/vcpkg-port-config.cmake")
+        endif()
+        vcpkg_cmake_get_vars(detected_file)
+        include("${detected_file}")
+        cmake_path(GET VCPKG_DETECTED_CMAKE_CXX_COMPILER PARENT_PATH ndk_bin_dir)
+        vcpkg_add_to_path(PREPEND "${ndk_bin_dir}")
     endif()
 
     vcpkg_configure_qmake(SOURCE_PATH ${SOURCE_PATH} ${ARGV})
