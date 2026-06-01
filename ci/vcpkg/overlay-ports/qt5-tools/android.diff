@@ -1,0 +1,34 @@
+diff --git a/src/linguist/linguist.pro b/src/linguist/linguist.pro
+index 7638c77..d8b6fb5 100644
+--- a/src/linguist/linguist.pro
++++ b/src/linguist/linguist.pro
+@@ -3,6 +3,8 @@ QT_FOR_CONFIG += tools-private
+ requires(qtConfig(linguist))
+ 
+ TEMPLATE = subdirs
++android: SUBDIRS =
++else: \
+ SUBDIRS  = \
+     lconvert \
+     lprodump \
+diff --git a/src/src.pro b/src/src.pro
+index f2675c7..fa42f23 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -18,6 +18,8 @@ qtHaveModule(widgets) {
+ }
+ 
+ SUBDIRS += linguist \
++
++!android: SUBDIRS += \
+     qtattributionsscanner
+ 
+ qtConfig(library) {
+@@ -47,6 +49,7 @@ qtNomakeTools( \
+ 
+ # This is necessary to avoid a race condition between toolchain.prf
+ # invocations in a module-by-module cross-build.
++!android: \
+ cross_compile:isEmpty(QMAKE_HOST_CXX.INCDIRS) {
+     qdoc.depends += qtattributionsscanner
+     windeployqt.depends += qtattributionsscanner
