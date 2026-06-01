@@ -5,6 +5,11 @@ function(configure_qt)
         message(FATAL_ERROR "configure_qt requires a TARGET_PLATFORM argument.")
     endif()
 
+    # PATH adjustments before adding the compiler dir
+    vcpkg_find_acquire_program(PYTHON3)
+    cmake_path(GET PYTHON3 PARENT_PATH PYTHON3_EXE_PATH)
+    vcpkg_add_to_path(PREPEND "${PYTHON3_EXE_PATH}")
+
     vcpkg_cmake_get_vars(detected_file)
     include("${detected_file}")
 
