@@ -85,6 +85,9 @@ jobs:
             (read HASH FILE; echo hash=$HASH) | \
             tee -a "$GITHUB_OUTPUT"
           case "$TARGET_TRIPLET" in
+          *-android*)
+            TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/android.cmake"
+            ;;
           *-linux*)
             TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/linux.cmake"
             ;;
@@ -95,7 +98,7 @@ jobs:
             TOOLCHAIN_FILE="$GITHUB_WORKSPACE/vcpkg-export/scripts/toolchains/windows.cmake"
             ;;
           *)
-            TOOLCHAIN_FILE="unknown"
+            TOOLCHAIN_FILE="unknown-vcpkg-toolchain-file"
             ;;
           esac
           echo "TOOLCHAIN_FILE=${TOOLCHAIN_FILE}" >> "$GITHUB_ENV"
