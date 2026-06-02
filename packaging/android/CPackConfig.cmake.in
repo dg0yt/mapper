@@ -95,7 +95,7 @@ if(result)
 endif()
 
 execute_process(
-  COMMAND androiddeployqt
+  COMMAND "@ANDROID_DEPLOY_QT@"
     --input "${deployment_settings}"
     --output "@MAPPER_PRO_DIR@/android-build"
     --deployment "bundled"

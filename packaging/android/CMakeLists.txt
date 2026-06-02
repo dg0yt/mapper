@@ -30,6 +30,8 @@ if(NOT ANDROID)
 endif()
 
 
+find_program(ANDROID_DEPLOY_QT androiddeployqt REQUIRED)
+
 set(MAPPER_APP_ID "default" CACHE STRING
   "Mapper Android App ID, either an explicit ID, or 'default'"
 )
