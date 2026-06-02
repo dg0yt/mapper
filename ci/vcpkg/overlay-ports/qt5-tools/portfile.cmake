@@ -22,9 +22,15 @@ if(EXISTS "${CURRENT_INSTALLED_DIR}/plugins/platforms/qminimal${VCPKG_TARGET_SHA
 endif()
 
 if(VCPKG_TARGET_IS_ANDROID)
-    vcpkg_copy_tools(
-        TOOL_NAMES lconvert lrelease lupdate qcollectiongenerator qhelpgenerator
-        DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/bin"
-        SEARCH_DIR "${CURRENT_HOST_INSTALLED_DIR}/tools/qt5/bin"
-    )
+    make_directory("${CURRENT_PACKAGES_DIR}/tools/qt5/bin")
+    foreach(tool IN ITEMS lconvert lrelease lupdate qcollectiongenerator qhelpgenerator)
+        string(CONFIGURE [[
+#!/bin/sh
+prefix=$(CDPATH= cd -- "$(dirname -- "$0")"/../../../.. && pwd -P)
+exec "$prefix/@HOST_TRIPLET@/tools/qt5/bin/$(basename "$0")" "$@"
+]] wrapper @ONLY)
+        set(file "${CURRENT_PACKAGES_DIR}/tools/qt5/bin/${tool}")
+        file(WRITE "${file}" "${wrapper}")
+        file(CHMOD "${file}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE)
+    endforeach()
 endif()
