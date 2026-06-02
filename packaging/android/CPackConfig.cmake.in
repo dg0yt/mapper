@@ -99,6 +99,7 @@ execute_process(
     --input "${deployment_settings}"
     --output "@MAPPER_PRO_DIR@/android-build"
     --deployment "bundled"
+    --android-platform android-34
     --gradle
     --verbose
 $<@RELEASE_APK@:
