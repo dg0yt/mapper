@@ -46,6 +46,10 @@
       ]
     },
     {
+      "name": "qt5-androidextras",
+      "platform": "android"
+    },
+    {
       "name": "qt5-base",
       "default-features": false
     },
