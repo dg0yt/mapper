@@ -37,7 +37,7 @@ jobs:
       target-triplet: arm64-android-dynamic-release
       host-triplet: x64-linux-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: "--trace"
+      cmake-args: "-DANDROID_ABI=arm64-v8a -DCMAKE_SYSTEM_VERSION=28"
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
 
