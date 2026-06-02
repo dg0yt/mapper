@@ -32,5 +32,6 @@ exec "$prefix/@HOST_TRIPLET@/tools/qt5/bin/$(basename "$0")" "$@"
         set(file "${CURRENT_PACKAGES_DIR}/tools/qt5/bin/${tool}")
         file(WRITE "${file}" "${wrapper}")
         file(CHMOD "${file}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE)
+        file(COPY "${file}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
     endforeach()
 endif()
