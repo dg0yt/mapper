@@ -1,17 +1,6 @@
 {
+  "name": "openorienteering-mapper",
   "dependencies": [
-    {
-      "$comment": "qt5-base needs qt5-base:host needs fontconfig:host.",
-      "name": "fontconfig",
-      "host": true,
-      "default-features": false
-    },
-    {
-      "$comment": "qt5-base needs qt5-base:host needs freetype:host.",
-      "name": "freetype",
-      "host": true,
-      "default-features": false
-    },
     {
       "name": "gdal",
       "default-features": false,
@@ -25,15 +14,6 @@
         "png",
         "sqlite3",
         "webp",
-        "zstd"
-      ]
-    },
-    {
-      "$comment": "gdal needs libarchive.",
-      "name": "libarchive",
-      "default-features": false,
-      "features": [
-        "lzma",
         "zstd"
       ]
     },
@@ -54,12 +34,6 @@
       "default-features": false
     },
     {
-      "$comment": "qt5-base needs qt5-base:host.",
-      "name": "qt5-base",
-      "host": true,
-      "default-features": false
-    },
-    {
       "name": "qt5-imageformats",
       "default-features": false
     },
@@ -76,14 +50,51 @@
       "default-features": false
     },
     "qt5-translations",
-    {
-      "$comment": "gdal, proj, qt5-base need tiff.",
-      "name": "tiff",
-      "features": [
-        "webp",
-        "zstd"
-      ]
-    },
     "zlib"
-  ]
+  ],
+  "default-features": [
+    "transitive-dependencies"
+  ],
+  "features": {
+    "transitive-dependencies": {
+      "description": "A grouping of feature specifications for transitive dependencies",
+      "dependencies": [
+        {
+          "$comment": "qt5-base needs qt5-base:host needs fontconfig:host.",
+          "name": "fontconfig",
+          "host": true,
+          "default-features": false
+        },
+        {
+          "$comment": "qt5-base needs qt5-base:host needs freetype:host.",
+          "name": "freetype",
+          "host": true,
+          "default-features": false
+        },
+        {
+          "$comment": "gdal needs libarchive.",
+          "name": "libarchive",
+          "default-features": false,
+          "features": [
+            "lzma",
+            "zstd"
+          ]
+        },
+        {
+          "$comment": "qt5-base needs qt5-base:host.",
+          "name": "qt5-base",
+          "host": true,
+          "default-features": false
+        },
+        {
+          "$comment": "gdal, proj, qt5-base need tiff.",
+          "name": "tiff",
+          "features": [
+            "webp",
+            "zstd"
+          ]
+        }
+      ]
+    }
+  }
 }
