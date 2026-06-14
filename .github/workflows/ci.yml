@@ -37,7 +37,13 @@ jobs:
       target-triplet: arm64-android-dynamic-release
       host-triplet: x64-linux-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: "-DANDROID_ABI=arm64-v8a -DCMAKE_SYSTEM_VERSION=24 -DANDROID_SDK=/usr/local/lib/android/sdk -DANDROID_SDK_BUILD_TOOLS_REVISION=34 -DANDROID_MIN_SDK_VERSION=28 -DANDROID_TARGET_SDK_VERSION=24"
+      cmake-args: >-
+        -DANDROID_ABI=arm64-v8a
+        -DANDROID_MIN_SDK_VERSION=24
+        -DANDROID_TARGET_SDK_VERSION=28
+        -DANDROID_SDK=/usr/local/lib/android/sdk
+        -DANDROID_SDK_BUILD_TOOLS_REVISION=34
+        -DCMAKE_SYSTEM_VERSION=24
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
 
@@ -49,7 +55,8 @@ jobs:
       target-triplet: arm64-osx-dynamic-release
       host-triplet: arm64-osx-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: "-DMapper_SYSTEM_NAME=macOS-arm64"
+      cmake-args: >-
+        -DMapper_SYSTEM_NAME=macOS-arm64
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
 
@@ -61,7 +68,13 @@ jobs:
       target-triplet: x64-android-dynamic-release
       host-triplet: x64-linux-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: "-DANDROID_ABI=x86_64 -DCMAKE_SYSTEM_VERSION=24 -DANDROID_SDK=/usr/local/lib/android/sdk -DANDROID_SDK_BUILD_TOOLS_REVISION=34 -DANDROID_MIN_SDK_VERSION=28 -DANDROID_TARGET_SDK_VERSION=24"
+      cmake-args: >-
+        -DANDROID_ABI=x86_64
+        -DANDROID_MIN_SDK_VERSION=24
+        -DANDROID_TARGET_SDK_VERSION=28
+        -DANDROID_SDK=/usr/local/lib/android/sdk
+        -DANDROID_SDK_BUILD_TOOLS_REVISION=34
+        -DCMAKE_SYSTEM_VERSION=24
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
 
@@ -84,7 +97,8 @@ jobs:
       target-triplet: x64-linux-dynamic-release
       host-triplet: x64-linux-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: -DCMAKE_BUILD_TYPE=Debug
+      cmake-args: >+
+        -DCMAKE_BUILD_TYPE=Debug
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
 
@@ -96,7 +110,8 @@ jobs:
       target-triplet: x64-osx-dynamic-release
       host-triplet: x64-osx-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: "-DMapper_SYSTEM_NAME=macOS-x64"
+      cmake-args: 
+        -DMapper_SYSTEM_NAME=macOS-x64
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
 
@@ -108,6 +123,9 @@ jobs:
       target-triplet: x64-windows-dynamic-release
       host-triplet: x64-windows-dynamic-release
       restore_export: ${{ inputs.restore_export != 'false' }}
-      cmake-args: "-DVCPKG_CRT_LINKAGE=dynamic -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
+      cmake-args: 
+        -DVCPKG_CRT_LINKAGE=dynamic
+        -DCMAKE_C_COMPILER=cl
+        -DCMAKE_CXX_COMPILER=cl
     secrets:
       ARTIFACTS_KEY: ${{ secrets.ARTIFACTS_KEY }}
