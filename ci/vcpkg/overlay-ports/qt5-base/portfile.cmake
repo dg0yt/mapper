@@ -46,6 +46,7 @@ set(PATCHES
     patches/CVE-2025-30348-qtbase-5.15.diff
 
     patches/android.diff
+    patches/androiddeployqt-54c9596.diff
     patches/winmain_pro.patch          #Moves qtmain to manual-link
     patches/windows_prf.patch          #fixes the qtmain dependency due to the above move
     patches/qt_app.patch               #Moves the target location of qt5 host apps to always install into the host dir.
