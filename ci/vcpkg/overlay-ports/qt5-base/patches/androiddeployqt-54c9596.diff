@@ -1,0 +1,28 @@
+diff --git a/src/tools/androiddeployqt/main.cpp b/src/tools/androiddeployqt/main.cpp
+index 74c22e51..acf62739 100644
+--- a/src/tools/androiddeployqt/main.cpp
++++ b/src/tools/androiddeployqt/main.cpp
+@@ -1533,6 +1533,11 @@ QList<QtDependency> findFilesRecursively(const Options &options, const QString &
+     return findFilesRecursively(options, info, options.qtInstallDirectory + QLatin1Char('/'));
+ }
+ 
++bool readDependenciesFromElf(Options *options,
++                             const QString &fileName,
++                             QSet<QString> *usedDependencies,
++                             QSet<QString> *remainingDependencies);
++
+ bool readAndroidDependencyXml(Options *options,
+                               const QString &moduleName,
+                               QSet<QString> *usedDependencies,
+@@ -1572,6 +1577,11 @@ bool readAndroidDependencyXml(Options *options,
+                         if (usedDependencies->contains(fileName.absolutePath))
+                             continue;
+ 
++                        if (fileName.absolutePath.endsWith(QLatin1String(".so"))) {
++                            QSet<QString> remainingDependencies;
++                            readDependenciesFromElf(options, fileName.absolutePath,
++                                                    usedDependencies, &remainingDependencies);
++                        }
+                         usedDependencies->insert(fileName.absolutePath);
+ 
+                         if (options->verbose)
