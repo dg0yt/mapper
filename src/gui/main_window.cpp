@@ -764,8 +764,13 @@ void MainWindow::saveWindowSettings()
 void MainWindow::loadWindowSettings()
 {
 #if defined(Q_OS_ANDROID)
+#  if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
 	// Always show the window on the whole available area on Android
 	resize(QApplication::desktop()->availableGeometry().size());
+#  else
+	setWindowState((windowState() & ~(Qt::WindowMinimized | Qt::WindowFullScreen))
+	               | Qt::WindowMaximized); // Cf. QWidget::showMaximized()
+#  endif
 #else
 	QSettings settings;
 	
