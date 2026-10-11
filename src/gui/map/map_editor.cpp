@@ -725,7 +725,10 @@ void MapEditorController::attach(MainWindow* window)
 #endif
 	if (mobile_mode)
 	{
+#if !defined(Q_OS_ANDROID) || QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+		// Qt 5.15: fullscreen screen sized window drawn with notch-sized offset
 		window->setWindowState(window->windowState() | Qt::WindowFullScreen);
+#endif
 		zoom_display_function = [window](const QString& text) {
 			window->showStatusBarMessage(text, 1000);
 		};
