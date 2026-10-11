@@ -18,6 +18,9 @@ on:
       cmake-args:
         type: string
         default: ""
+      asset_destination_tag:
+        type: string
+        default: ""
     secrets:
       ARTIFACTS_KEY:
         required: false
@@ -307,3 +310,15 @@ jobs:
           archive: false
           compression-level: 0
           retention-days: 7
+
+      - name: Save assets
+        if: inputs.asset_destination_tag != ''
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.asset_destination_tag }}
+          draft: true
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          working_directory: ${{ github.workspace }}/cache/downloads
+          files: "./*"
+          overwrite_files: false
