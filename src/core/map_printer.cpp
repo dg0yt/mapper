@@ -101,11 +101,15 @@ namespace literal {
 }  // namespace literal
 
 
+QPainterPath PainterPathFromRect(const QRectF& rect)
+{
+    QPainterPath painter_path;
+	painter_path.addRect(rect);
+	return painter_path;
+};
 void setExactClipRect(QPainter* painter, const QRectF& rect)
 {
-	QPainterPath path;
-	path.addRect(rect);
-	painter->setClipPath(path, Qt::ReplaceClip);
+	painter->setClipPath(PainterPathFromRect(rect), Qt::ReplaceClip);
 }
 
 
