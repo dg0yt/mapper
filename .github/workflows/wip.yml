@@ -16,12 +16,12 @@ jobs:
     name: GHA security analysis (zizmor)
     runs-on: ubuntu-latest
     steps:
-    - name: Save assets
-      if: inputs.asset_destination_tag != ''
-	  env:
-	    DESTINATION_TAG: "${{ inputs.asset_destination_tag }}"
-	    GH_TOKEN: ${{ github.token }}
-	  run: |
-	    echo "Hello world" > foo.txt
-        gh release create --draft --fail-on-no-commits "$DESTINATION_TAG"
-	    gh release upload "$DESTINATION_TAG" foo.txt
+      - name: Save assets
+        #if: inputs.asset_destination_tag != ''
+	    env:
+	      DESTINATION_TAG: "${{ inputs.asset_destination_tag }}"
+	      GH_TOKEN: ${{ github.token }}
+	    run: |
+	      echo "Hello world" > foo.txt
+          gh release create --draft --fail-on-no-commits "$DESTINATION_TAG"
+	      gh release upload "$DESTINATION_TAG" foo.txt
