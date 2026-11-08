@@ -9,7 +9,7 @@ on:
         type: string
         default: "rolling"
 
-permissions: content: write
+permissions: { content: write }
 
 jobs:
   wip:
