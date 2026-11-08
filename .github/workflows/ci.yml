@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [ "master", "vcpkg" ]
-  pull_request:
+  pull_request_target:
     branches: [ "master", "vcpkg" ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -16,11 +16,11 @@ on:
       target_pattern:
         description: 'Build jobs matching this pattern'
         type: string
-        default: "^"
+        default: "^x64-linux$"
       asset_destination_tag:
         description: 'Upload vcpkg source assets'
         type: string
-        default: ""
+        default: "rolling"
 
   # Keep cache alive
   schedule:

@@ -313,12 +313,10 @@ jobs:
 
       - name: Save assets
         if: inputs.asset_destination_tag != ''
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ inputs.asset_destination_tag }}
-          draft: true
-          prerelease: true
-          target_commitish: ${{ github.sha }}
-          working_directory: ${{ github.workspace }}/cache/downloads
-          files: "./*"
-          overwrite_files: false
+        env:
+          DESTINATION_TAG: "${{ inputs.asset_destination_tag }}"
+          GH_TOKEN: ${{ github.token }}
+          VCPKG_DOWNLOADS: "${{ github.workspace }}/cache/downloads"
+        run: |
+          gh release create --draft --fail-on-no-commits "$DESTINATION_TAG"
+          gh release upload "$DESTINATION_TAG" "$VCPKG_DOWNLOADS"/*
