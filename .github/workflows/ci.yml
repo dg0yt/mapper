@@ -30,7 +30,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions: ${{ case(github.event_name == 'workflow_dispatch', content:write, {}) }}
+permissions:
+  contents: ${{ case(github.event_name == 'workflow_dispatch', 'write', 'none') }}
 
 jobs:
   arm64-android:
