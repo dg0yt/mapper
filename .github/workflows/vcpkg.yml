@@ -312,7 +312,7 @@ jobs:
           retention-days: 7
 
       - name: Save assets
-        if: inputs.asset_destination_tag != ''
+        if: github.event_name == 'workflow_dispatch'
         env:
           DESTINATION_TAG: "${{ inputs.asset_destination_tag }}"
           GH_TOKEN: ${{ github.token }}
